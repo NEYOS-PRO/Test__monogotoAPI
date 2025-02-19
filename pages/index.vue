@@ -1,11 +1,15 @@
 <template>
 
     <div class="space-y-3">
-        <h1 class="text-center text-4xl font-bold">Get Thing Information</h1>
+        <h1 class="text-center text-4xl font-bold mb-6">Get Thing Information ( Monogoto_API)</h1>
+
+        <form @submit.prevent="handleIccidChange" class="flex space-x-2 justify-center items-center">
+            <input type="text" disabled placeholder="Enter ICCID" v-model="iccid" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </form>
         <!-- Grille de cards -->
         <div v-if="status === 'success'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Card Identification -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">Identification</h2>
                 </template>
@@ -38,7 +42,7 @@
             </UCard>
 
             <!-- Card État et Statut -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">État et Statut</h2>
                 </template>
@@ -65,7 +69,7 @@
             </UCard>
 
             <!-- Card Configuration réseau -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">Configuration réseau</h2>
                 </template>
@@ -109,7 +113,7 @@
             </UCard>
 
             <!-- Card Abonnements mobiles -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">Abonnements mobiles</h2>
                 </template>
@@ -124,7 +128,7 @@
             </UCard>
 
             <!-- Card Services -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">Services</h2>
                 </template>
@@ -139,7 +143,7 @@
             </UCard>
 
             <!-- Card APNs -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">APNs</h2>
                 </template>
@@ -194,7 +198,7 @@
             </UCard>
 
             <!-- Card Consommation -->
-            <UCard class="shadow-lg">
+            <UCard class="shadow-sm">
                 <template #header>
                     <h2 class="text-xl font-bold">Consommation</h2>
                 </template>
@@ -235,9 +239,11 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="js">
 
-const url = ref('https://console.monogoto.io/thing/ThingId_ICCID_8999911240071508339');
+const iccid = ref('8999911240071508339');
+const url = ref('https://console.monogoto.io/thing/ThingId_ICCID_');
+
 // Fonction pour formater les octets en format lisible
 const formatBytes = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -249,12 +255,25 @@ const formatBytes = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-const { data:apiData, refresh, error, status } = await useFetch(`${url.value}`,{
-    onRequest({ options }) {
-    options.headers.set('Accept', 'application/json'),
-    options.headers.set('Authorization', `Bearer ${process.env.Token}`)
-  }
+// Utilisation de watchEffect pour réagir aux changements de iccid
+const { data: apiData, error, status, refresh } = await useFetch(() => `${url.value}${iccid.value}`, {
+    // Options de la requête
+    headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${process.env.Token}`
+    },
+    // Pas besoin de watch ici car on utilise une fonction pour l'URL
+    immediate: true,
+    // Gestion des erreurs
+    onError: (error) => {
+        console.error('Erreur:', error)
+    }
 });
+
+// Fonction pour gérer le changement d'ICCID
+const handleIccidChange = async () => {
+    await refresh();
+}
 
 </script>
 
