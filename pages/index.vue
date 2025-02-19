@@ -250,7 +250,7 @@ const formatBytes = (bytes) => {
 const { data:apiData, refresh, error, status } = await useFetch(`${url.value}`,{
     onRequest({ options }) {
     options.headers.set('Accept', 'application/json'),
-    options.headers.set('Authorization', process.env.Token)
+    options.headers.set('Authorization', `Bearer ${process.env.Token}`)
   }
 });
 
