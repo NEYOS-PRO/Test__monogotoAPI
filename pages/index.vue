@@ -4,7 +4,8 @@
         <h1 class="text-center text-4xl font-bold mb-6">Get Thing Information ( Monogoto_API)</h1>
 
         <form @submit.prevent="handleIccidChange" class="flex space-x-2 justify-center items-center">
-            <input type="text" disabled placeholder="Enter ICCID" v-model="iccid" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="text" placeholder="Enter ICCID" v-model="iccid" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit</button>
         </form>
         <!-- Grille de cards -->
         <div v-if="status === 'success'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -271,8 +272,23 @@ const { data: apiData, error, status, refresh } = await useFetch(() => `${url.va
 });
 
 // Fonction pour gérer le changement d'ICCID
-const handleIccidChange = async () => {
-    await refresh();
+async function handleIccidChange(){
+
+    try {
+        const data_load= await $fetch("/api/data_api",{
+        method: "POST",
+            body: {
+                iccid: iccid.value
+            }
+        }); 
+
+        if(data_load.status === 200){
+            apiData.value = data_load;
+            console.log(data_load)
+        }
+    }catch(error){
+        console.error('Erreur:', error)
+    }
 }
 
 </script>
