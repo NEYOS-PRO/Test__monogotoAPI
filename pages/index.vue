@@ -1,12 +1,6 @@
 <template>
 
     <div class="space-y-3">
-        <h1 class="text-center text-4xl font-bold mb-6">Get Thing Information ( Monogoto_API)</h1>
-
-        <form @submit.prevent="handleIccidChange" class="flex space-x-2 justify-center items-center">
-            <input type="text" placeholder="Enter ICCID" v-model="iccid" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit</button>
-        </form>
         <!-- Grille de cards -->
         <div v-if="status === 'success'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Card Identification -->
@@ -242,6 +236,7 @@
 
 <script setup lang="js">
 
+const config = useRuntimeConfig();
 const iccid = ref('8999911240071508339');
 const url = ref('https://console.monogoto.io/thing/ThingId_ICCID_');
 
@@ -261,7 +256,7 @@ const { data: apiData, error, status, refresh } = await useFetch(() => `${url.va
     // Options de la requête
     headers: {
         'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.Token}`
+        'Authorization': `Bearer ${config.public.TOKEN_API}`
     },
     // Pas besoin de watch ici car on utilise une fonction pour l'URL
     immediate: true,
