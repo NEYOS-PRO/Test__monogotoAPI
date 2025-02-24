@@ -37,12 +37,18 @@ const columns = [
     { key: 'Total', label: 'Total' }
 ];
 
+/**
+ * EN VAR
+ */
+
+ const config = useRuntimeConfig();
+
 onMounted(async () => {
     try {
         const response = await fetch("https://console.monogoto.io/report-history/downloadReport/csv/%2Fefs%2Freports%2Fcsv%2F2025%2F2%2F20%2FReport_Rapport_complet3_%23b15fe.csv", {
             headers: {
                 "Accept": "application/json",
-                "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlIjoiVXNlclByb2ZpbGVJZF80MGUwNGM5MS1lZjVjLTRiY2YtYTA4Yi0yMjRlM2Y2ZDk5ZDEiLCJSZWFsbSI6ImN1c3RvbWVyIiwiQ3VzdG9tZXJJZCI6ImNpZF8zYzY4M2FjNC1kYmFhLTQ4MzQtODZmOC0wOGRmMTRkZDFiM2QiLCJPcmdhbml6YXRpb25JZCI6Ik9yZ2FuaXphdGlvbklkXzIzODc4ZDdkLWRmNTktNDYzOS1hYzJjLTFlYzZkOWQ4YjAxYSIsIlVzZXJJZCI6IlVzZXJJZF85MWVkNjI1Yy1lY2UwLTQxMWItOTgzMi1lZDM5ZTk3OGVhMTYiLCJqd3RpZCI6ImE0YzViZWM1LTM4ZTctNGZmYS05ODBiLTFkYjAzNzM2MWMxNSIsImlhdCI6MTc0MDM4NjY1MSwiZXhwIjoxNzQwNDAxMDUxfQ.PGkMdQ4zg-gchpsJvX1gBojlEqkrR4JuZix4KE8EdPM`
+                "Authorization": `Bearer ${config.public.TOKEN_API}`
             }
         });
         const data = await response.text();
