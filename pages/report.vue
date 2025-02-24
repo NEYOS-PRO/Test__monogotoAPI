@@ -11,6 +11,7 @@
         <div v-if="report">
             <UTable
                 loading
+                v-model:expand="expand"
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
                 :progress="{ color: 'primary', animation: 'carousel' }"
                 sort-asc-icon="i-heroicons-arrow-up-20-solid"
@@ -19,7 +20,13 @@
                 class="w-full"
                 :columns="filteredColumns"
                 :rows="paginatedRows"
-            />
+            >
+                <template #expand="{ row }">
+                    <div class="p-4">
+                        <pre>{{ row }}</pre>
+                    </div>
+                </template>
+            </UTable>
             <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
                 <UPagination v-model="page" :page-count="pageCount" :total="filteredRows.length" />
             </div>
@@ -30,11 +37,16 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 
+const expand = ref({
+  openedRows: [],
+  row: null
+})
+
 const report = ref(null);
 const searchQuery = ref("");
 const selectedColumns = ref([]); // Initialiser avec toutes les clés des colonnes
 const page = ref(1);
-const pageCount = 10;
+const pageCount = 5;
 
 const columns = [
     { key: 'Thing Name', label: 'Thing Name', sortable: true },
