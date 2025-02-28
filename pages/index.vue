@@ -2,8 +2,37 @@
     <div>
 
         <div class="flex justify-between items-center mx-3">   
-            <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
+                <UButton
+                    icon="i-heroicons-arrow-path"
+                    size="sm"
+                    color="primary"
+                    variant="solid"
+                    label="Generating report"
+                    disabled
+                    :trailing="false"
+                />
+
+                <UButton
+                    size="sm"
+                    color="blue"
+                    variant="solid"
+                    label="Activate"
+                    :disabled="selected.length === 0"
+                    :trailing="false"
+                    @click="ActivateSim"
+                />
+
+                <UButton
+                    size="sm"
+                    color="red"
+                    variant="solid"
+                    label="Desactivate"
+                    :disabled="selected.length === 0"
+                    :trailing="false"
+                    @click="isModalOpen = true"
+                />
             </div>
             <UPopover :popper="{ placement: 'bottom-start' }">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
@@ -75,6 +104,31 @@
             </UTooltip>
         </template>
     </UPagination>
+
+    <!---Modal-->
+
+    <UModal v-model="isModalOpen" prevent-close>
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Souhaitea-vous vraiment désactiver cette SIM ?
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
+          </div>
+        </template>
+
+        <div calss="p-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Vous êtes sur le point de désactiver la SIM sélectionnée. Voulez-vous continuer ?
+            </p>
+            <div class="flex justify-end mt-4">
+                <UButton color="gray" variant="ghost" label="Annuler" @click="isModalOpen = false" />
+                <UButton color="red" variant="solid" label="Désactiver" @click="DesactivateSim" />          
+            </div>
+        </div>
+      </UCard>
+    </UModal>
 </template>
 
 <script setup lang="js">
@@ -105,8 +159,10 @@ function select(row) {
   } else {
     selected.value.splice(index, 1);
   }
-  
-  console.log(selected.value);
+  /**
+   * Affichage de l'IMSI de la SIM sélectionnée
+   */
+  console.log(selected.value[0]['IMSI']);
 }
 
 const columns = [
@@ -172,6 +228,55 @@ function isRangeSelected(duration) {
 
 function selectRange(duration) {
   selectedDate.value = { start: sub(new Date(), duration), end: new Date() };
-  console.log(selectedDate.value);
+}
+
+/**
+ * Modal
+ */
+
+ const isModalOpen = ref(false); 
+
+/***
+ * Activate des SIMs
+ */
+
+
+const ActivateSim = async () => {
+
+    const IMSI = selected.value[0]['IMSI'];
+
+    try {
+        const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/ACTIVE`);
+
+        if (response.ok) {
+        console.log('SIMs Activated successfully');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ * Desactivate des SIMs
+ */
+const can_desactivate = ref(false);
+const DesactivateSim = async () => {
+
+    const IMSI = selected.value[0]['IMSI'];
+
+    if(can_desactivate.value === false){
+        selected.value = [];
+        return false;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/SUSPENDED`);
+
+        if (response.ok) {
+            console.log('SIMs Desactivate successfully');
+        }
+        } catch (error) {
+        console.log(error);
+    }
 }
 </script>
