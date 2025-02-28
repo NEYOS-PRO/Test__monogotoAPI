@@ -2,8 +2,8 @@
   <div>
     <NuxtRouteAnnouncer />
     <!-- <NuxtWelcome /> -->
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+   <NuxtLayout>
+      <NuxtPage/>
+   </NuxtLayout>
   </div>
 </template>

@@ -12,8 +12,10 @@
   "dependencies": {
     "@nuxt/ui": "^2.21.0",
     "@nuxtjs/prismic": "^4.0.1",
+    "date-fns": "^2.30.0",
     "nuxt": "^3.15.4",
     "nuxt-highlightjs": "^1.0.3",
+    "v-calendar": "^3.1.2",
     "vue": "latest",
     "vue-router": "latest"
   }
