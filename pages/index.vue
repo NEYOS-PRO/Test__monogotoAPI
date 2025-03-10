@@ -64,11 +64,13 @@
 
         <UTable
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Generating report, please wait...' }"
-         :columns="selectedColumns" :rows="data" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="filteredData" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
-                <div class="p-4">
-                    <pre>{{ row }}</pre>
+            
+                <div class="txt-xs">
+                  <UTable :columns="secondaryColumns" :rows="getHistoricalData(row.IMSI)" class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" />
+                    <!-- <pre>{{ row }}</pre> -->
                 </div>
             </template>
         </UTable>
@@ -143,7 +145,7 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
 import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
@@ -157,7 +159,6 @@ const data = ref([]);
 
 const start_date = ref("");
 const end_date = ref("");
-
 /**
  * Data pagination
  */
@@ -199,14 +200,18 @@ function select(row) {
 const columns = [
   { key: 'Thing Name', label: 'Thing Name', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
-  { key: 'Operators', label: 'Operators', sortable: true },
   { key: 'Data', label: 'Data', sortable: true },
-  { key: 'SMS', label: 'SMS', sortable: true },
-  { key: 'Credit', label: 'Credit', sortable: true },
-  { key: 'Total', label: 'Total', sortable: true }
+  { key: 'SMS', label: 'SMS', sortable: true }
 ];
 
 const selectedColumns = ref([...columns]);
+
+const secondaryColumns = [
+  { key: 'Data', label: 'Data' },
+  { key: 'SMS', label: 'SMS'},
+  { key: 'MO SMS', label: 'MO SMS' },
+  { key: 'MT SMS', label: 'MT SMS'}
+];
 
 /***
  * Gestion des ressources...
@@ -241,33 +246,7 @@ function selectRange(duration) {
  * du report généré....
  */
 
-// async function fetchReport() {
-//   try {
-//     const response = await fetch(`http://localhost:3333/get_things_report/${start_date.value}/${end_date.value}`); 
-//     const jsonData = await response.json();
-//     loading.value = "pending";
-
-//     if (response.ok) {
-//       console.log(jsonData);
-//       // Transform the data to match the table columns
-//       const transformedData = jsonData.map(item => ({
-//         'Thing Name': item['Thing Name'],
-//         'IMSI': item['IMSI'],
-//         'Operators': item['Operators'].join(', '),
-//         'Data': item['Consumption'][0]['Data'],
-//         'SMS': item['Consumption'][0]['SMS'],
-//         'Credit': item['Consumption'][0]['Credit'],
-//         'Total': item['Consumption'][0]['Total']
-//       }));
-//       data.value = transformedData;
-//       loading.value = "idle";
-//     }
-//   } catch (error) {
-//     console.log(error); 
-//   }
-// }
-
-async function fetchReport() {
+ async function fetchReport() {
   try {
     const response = await fetch(`http://localhost:3333/get_things_report/${start_date.value}/${end_date.value}`); 
     const jsonData = await response.json();
@@ -374,5 +353,38 @@ const DesactivateSim = async () => {
   } catch (error) {
     console.log(error);
   }
+}
+
+function getLatestData(data) {
+  const latestDataMap = new Map();
+  data.forEach(item => {
+    if (!latestDataMap.has(item['IMSI'])) {
+      latestDataMap.set(item['IMSI'], item);
+    } else {
+      const existingItem = latestDataMap.get(item['IMSI']);
+      if (!existingItem['Data'] && item['Data']) {
+        existingItem['Data'] = item['Data'];
+      }
+    }
+  });
+
+  // If Data is still empty, use the second last value
+  latestDataMap.forEach((value, key) => {
+    if (!value['Data']) {
+      const historicalData = data.filter(item => item['IMSI'] === key);
+      if (historicalData.length > 1) {
+        value['Data'] = historicalData[historicalData.length - 2]['Data'];
+      }
+    }
+  });
+
+  return Array.from(latestDataMap.values());
+}
+
+const filteredData = computed(() => getLatestData(data.value));
+
+function getHistoricalData(IMSI) {
+  const historicalData = data.value.filter(item => item['IMSI'] === IMSI);
+  return historicalData.slice(0, -1); // Exclude the last value
 }
 </script>
