@@ -77,7 +77,7 @@
 
 
     <!--Pagination-->
-    <UPagination class="flex justify-center mt-3 mb-3" v-model="page" :total="items.length" :ui="{ rounded: 'first-of-type:rounded-s-md last-of-type:rounded-e-md' }">
+    <UPagination  class="flex justify-center mt-3 mb-3" v-model="page" :page-count="pageCount" :total="items.length" :ui="{ rounded: 'first-of-type:rounded-s-md last-of-type:rounded-e-md' }">
         <template #first="{ onClick, canGoFirst }">
             <UTooltip text="First page">
                 <UButton
@@ -104,6 +104,8 @@
             </UTooltip>
         </template>
     </UPagination>
+
+  
 
     <!---Modal Altert Delete SIM-->
 
@@ -141,20 +143,27 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
-import { DatePicker} from "v-calendar"; 
+import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
 
 const selected = ref([]); 
 const data = ref([]);
 
 /**
- * Data pagination
+ * Les dates selectionnées
  */
 
+const start_date = ref("");
+const end_date = ref("");
+
+/**
+ * Data pagination
+ */
 const page = ref(1);
 const items = ref(data);
+const pageCount = 5;
 
 const loading = ref("pending");
 
@@ -162,6 +171,17 @@ const expand = ref({
   openedRows: [data[0]],
   row: {}
 });
+
+// const rows = computed(() => {
+//   const start = (page.value - 1) * pageCount;
+//   const end = start + pageCount;
+//   return items.value.slice(start, end);
+// });
+
+/**
+ * Recupération de l'id de la SIM sélectionnée...
+ * @param row 
+ */
 
 function select(row) {
   const index = selected.value.findIndex(item => item.id === row.id);
@@ -188,37 +208,6 @@ const columns = [
 
 const selectedColumns = ref([...columns]);
 
-/**
- * Lorsque le composant est monté, on récupère les données
- * du report généré....
- */
-
-onMounted(async () => {
-  try {
-    const response = await fetch('http://localhost:3333/get_things_report/'); 
-    const jsonData = await response.json();
-    loading.value = "pending";
-
-    if (response.ok) {
-      console.log(jsonData);
-      // Transform the data to match the table columns
-      const transformedData = jsonData.map(item => ({
-        'Thing Name': item['Thing Name'],
-        'IMSI': item['IMSI'],
-        'Operators': item['Operators'].join(', '),
-        'Data': item['Consumption'][0]['Data'],
-        'SMS': item['Consumption'][0]['SMS'],
-        'Credit': item['Consumption'][0]['Credit'],
-        'Total': item['Consumption'][0]['Total']
-      }));
-      data.value = transformedData;
-      loading.value = "idle";
-    }
-  } catch (error) {
-    console.log(error); 
-  }
-});
-
 /***
  * Gestion des ressources...
  */
@@ -239,50 +228,120 @@ function isRangeSelected(duration) {
 
 function selectRange(duration) {
   selectedDate.value = { start: sub(new Date(), duration), end: new Date() };
+
+  //stocker les dates selectionnées
+  start_date.value = selectedDate.value.start.toISOString();
+  end_date.value = selectedDate.value.end.toISOString();
+  // console.log("start_date"+selectedDate.value.start.toISOString());
+  // console.log("end"+selectedDate.value.end.toISOString());
 }
+
+/**
+ * Lorsque le composant est monté, on récupère les données
+ * du report généré....
+ */
+
+// async function fetchReport() {
+//   try {
+//     const response = await fetch(`http://localhost:3333/get_things_report/${start_date.value}/${end_date.value}`); 
+//     const jsonData = await response.json();
+//     loading.value = "pending";
+
+//     if (response.ok) {
+//       console.log(jsonData);
+//       // Transform the data to match the table columns
+//       const transformedData = jsonData.map(item => ({
+//         'Thing Name': item['Thing Name'],
+//         'IMSI': item['IMSI'],
+//         'Operators': item['Operators'].join(', '),
+//         'Data': item['Consumption'][0]['Data'],
+//         'SMS': item['Consumption'][0]['SMS'],
+//         'Credit': item['Consumption'][0]['Credit'],
+//         'Total': item['Consumption'][0]['Total']
+//       }));
+//       data.value = transformedData;
+//       loading.value = "idle";
+//     }
+//   } catch (error) {
+//     console.log(error); 
+//   }
+// }
+
+async function fetchReport() {
+  try {
+    const response = await fetch(`http://localhost:3333/get_things_report/${start_date.value}/${end_date.value}`); 
+    const jsonData = await response.json();
+    loading.value = "pending";
+
+    if (response.ok) {
+      console.log(jsonData);
+      // Transform the data to match the table columns
+      const transformedData = jsonData.map(item => ({
+        'Thing Name': item['Thing Name'],
+        'IMSI': item['IMSI'],
+        'MSISDN': item['MSISDN'],
+        'Roaming Partner': item['Roaming Partner'],
+        'Data': item['Data'],
+        'SMS': item['SMS'],
+        'MO SMS': item['MO SMS'],
+        'MT SMS': item['MT SMS'],
+        'Voice': item['Voice'],
+        'MO VOICE': item['MO VOICE'],
+        'MT VOICE': item['MT VOICE'],
+        'Total Before Credit': item['Total Before Credit'],
+        'Credit': item['Credit'],
+        'Total': item['Total']
+      }));
+      data.value = transformedData;
+      loading.value = "idle";
+    }
+  } catch (error) {
+    console.log(error); 
+  }
+}
+
+onMounted(fetchReport);
+
+watch([start_date, end_date], fetchReport);
 
 /**
  * Modal
  */
 
- const isModalOpen = ref(false); 
+const isModalOpen = ref(false); 
 
- /**
-  * Modal Message
-  */
- const modalMEssage=ref(null); 
- const modalMessageOpen=ref(false);
+/**
+ * Modal Message
+ */
+const modalMEssage = ref(null); 
+const modalMessageOpen = ref(false);
 
 /***
  * Activate des SIMs
  */
 
-
 const ActivateSim = async () => {
+  const IMSI = selected.value[0]['IMSI'];
 
-    const IMSI = selected.value[0]['IMSI'];
+  try {
+    const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/ACTIVE`);
 
-    try {
-        const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/ACTIVE`);
-
-        if (response.ok) {
-        
-            console.log('SIMs Activated successfully');
-            modalMEssage.value = 'SIMs Activated successfully';
-            selected.value = [];
-            modalMessageOpen.value = true;
-            /**
-             * Après 2 sec désactivé le modal
-             */
-            setTimeout(() => {
-                modalMessageOpen.value = false;
-                selected.value = [];
-            }, 2000);
-
-        }
-    } catch (error) {
-        console.log(error);
+    if (response.ok) {
+      console.log('SIMs Activated successfully');
+      modalMEssage.value = 'SIMs Activated successfully';
+      selected.value = [];
+      modalMessageOpen.value = true;
+      /**
+       * Après 2 sec désactivé le modal
+       */
+      setTimeout(() => {
+        modalMessageOpen.value = false;
+        selected.value = [];
+      }, 2000);
     }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 /**
@@ -290,31 +349,30 @@ const ActivateSim = async () => {
  */
 const can_desactivate = ref(false);
 const DesactivateSim = async () => {
+  const IMSI = selected.value[0]['IMSI'];
 
-    const IMSI = selected.value[0]['IMSI'];
+  if (can_desactivate.value === false) {
+    selected.value = [];
+    return false;
+  }
 
-    if(can_desactivate.value === false){
-        selected.value = [];
-        return false;
+  try {
+    const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/SUSPENDED`);
+
+    if (response.ok) {
+      console.log('SIMs Desactivate successfully');
+      modalMEssage.value = 'SIMs Desactivate successfully';
+      selected.value = [];
+      modalMessageOpen.value = true;
+      /**
+       * Après 2 sec désactivé le modal
+       */
+      setTimeout(() => {
+        modalMessageOpen.value = false;
+      }, 2000);
     }
-
-    try {
-        const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/SUSPENDED`);
-
-        if (response.ok) {
-            console.log('SIMs Desactivate successfully');
-            modalMEssage.value = 'SIMs Desactivate successfully';
-            selected.value = [];
-            modalMessageOpen.value = true;
-            /**
-             * Après 2 sec désactivé le modal
-             */
-            setTimeout(() => {
-                modalMessageOpen.value = false;
-            }, 2000);
-        }
-        } catch (error) {
-        console.log(error);
-    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 </script>
