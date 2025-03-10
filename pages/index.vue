@@ -157,8 +157,8 @@ const data = ref([]);
  * Les dates selectionnées
  */
 
-const start_date = ref("");
-const end_date = ref("");
+ const start_date = ref(new Date(new Date().setDate(new Date().getDate() - 7)).toISOString());
+ const end_date = ref(new Date().toISOString());
 /**
  * Data pagination
  */
@@ -225,7 +225,7 @@ const ranges = [
   { label: 'Last 6 months', duration: { months: 6 } },
   { label: 'Last year', duration: { years: 1 } }
 ];
-const selectedDate = ref({ start: sub(new Date(), { days: 14 }), end: new Date() });
+const selectedDate = ref({ start: sub(new Date(), { days: 7 }), end: new Date() });
 
 function isRangeSelected(duration) {
   return isSameDay(selectedDate.value.start, sub(new Date(), duration)) && isSameDay(selectedDate.value.end, new Date());
