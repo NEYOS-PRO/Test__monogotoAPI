@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <div class="flex justify-between items-center mx-3">   
             <div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
@@ -142,6 +141,7 @@
         <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
       </div>
     </UModal>
+
 </template>
 
 <script setup lang="js">
@@ -237,8 +237,6 @@ function selectRange(duration) {
   //stocker les dates selectionnées
   start_date.value = selectedDate.value.start.toISOString();
   end_date.value = selectedDate.value.end.toISOString();
-  // console.log("start_date"+selectedDate.value.start.toISOString());
-  // console.log("end"+selectedDate.value.end.toISOString());
 }
 
 /**
@@ -272,8 +270,8 @@ function selectRange(duration) {
         'Total': item['Total']
       }));
       data.value = transformedData;
-      loading.value = "idle";
     }
+    loading.value = "idle";
   } catch (error) {
     console.log(error); 
   }
