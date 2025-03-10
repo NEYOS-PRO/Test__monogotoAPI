@@ -105,14 +105,14 @@
         </template>
     </UPagination>
 
-    <!---Modal-->
+    <!---Modal Altert Delete SIM-->
 
     <UModal v-model="isModalOpen" prevent-close>
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-              Souhaitea-vous vraiment désactiver cette SIM ?
+              Souhaitez-vous vraiment désactiver cette SIM ?
             </h3>
             <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
           </div>
@@ -129,11 +129,22 @@
         </div>
       </UCard>
     </UModal>
+
+
+    <!--Modal Message-->
+    <UModal v-model="modalMessageOpen" :transition="false">
+      <div class="p-4 flex flex-row space-y-2">
+        <p>{{ modalMEssage }}</p>
+        <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
+      </div>
+    </UModal>
 </template>
 
 <script setup lang="js">
 import { ref, onMounted } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
+import { DatePicker} from "v-calendar"; 
+import 'v-calendar/dist/style.css'; 
 
 const selected = ref([]); 
 const data = ref([]);
@@ -236,6 +247,12 @@ function selectRange(duration) {
 
  const isModalOpen = ref(false); 
 
+ /**
+  * Modal Message
+  */
+ const modalMEssage=ref(null); 
+ const modalMessageOpen=ref(false);
+
 /***
  * Activate des SIMs
  */
@@ -249,7 +266,19 @@ const ActivateSim = async () => {
         const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/ACTIVE`);
 
         if (response.ok) {
-        console.log('SIMs Activated successfully');
+        
+            console.log('SIMs Activated successfully');
+            modalMEssage.value = 'SIMs Activated successfully';
+            selected.value = [];
+            modalMessageOpen.value = true;
+            /**
+             * Après 2 sec désactivé le modal
+             */
+            setTimeout(() => {
+                modalMessageOpen.value = false;
+                selected.value = [];
+            }, 2000);
+
         }
     } catch (error) {
         console.log(error);
@@ -274,6 +303,15 @@ const DesactivateSim = async () => {
 
         if (response.ok) {
             console.log('SIMs Desactivate successfully');
+            modalMEssage.value = 'SIMs Desactivate successfully';
+            selected.value = [];
+            modalMessageOpen.value = true;
+            /**
+             * Après 2 sec désactivé le modal
+             */
+            setTimeout(() => {
+                modalMessageOpen.value = false;
+            }, 2000);
         }
         } catch (error) {
         console.log(error);

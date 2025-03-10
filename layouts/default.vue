@@ -1,6 +1,6 @@
 <template>
-    <UDashboardLayout>
-      <slot />
-    </UDashboardLayout>
-  </template>
+    <div>
+      <slot/>
+    </div>
+</template>
   
