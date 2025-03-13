@@ -63,12 +63,12 @@
 
         <UTable
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Generating report, please wait...' }"
-         :columns="selectedColumns" :rows="filteredData" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="data" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
             
                 <div class="txt-xs">
-                  <UTable :columns="secondaryColumns" :rows="getHistoricalData(row.IMSI)" class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" />
+                  <UTable :columns="secondaryColumns" :rows="row.allOperators.filter(operator => operator !== '').map(operator => ({ Operators: operator }))" class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" />
                     <!-- <pre>{{ row }}</pre> -->
                 </div>
             </template>
@@ -200,6 +200,7 @@ function select(row) {
 const columns = [
   { key: 'Thing Name', label: 'Thing Name', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
+  { key: 'Operators', label: 'Operators', sortable: true }, // Add Operators column
   { key: 'Data', label: 'Data', sortable: true },
   { key: 'SMS', label: 'SMS', sortable: true }
 ];
@@ -207,12 +208,8 @@ const columns = [
 const selectedColumns = ref([...columns]);
 
 const secondaryColumns = [
-  { key: 'Thing Name', label: 'Thing Name' },
-  { key: 'Data', label: 'Data' },
-  { key: 'SMS', label: 'SMS' },
-  { key: 'Credit', label: 'Credit' },
-  { key: 'Total Before Credit', label: 'Total Before Credit' },
-  { key: 'Total', label: 'Total' }
+  { key: 'Operators', label: 'Operators' }, // Add Operators column
+
 ];
 
 /***
@@ -255,16 +252,24 @@ function selectRange(duration) {
     if (response.ok) {
       console.log(jsonData);
       // Transform the data to match the table columns
-      const transformedData = jsonData.map(item => ({
-        'Thing Name': item['Thing Name'],
-        'IMSI': item['IMSI'],
-        'Data': item['Consumption'][0]['Data'],
-        'SMS': item['Consumption'][0]['Total'], // Assuming 'Total' represents SMS consumption
-        'Credit': item['Consumption'][0]['Credit'],
-        'Total Before Credit': item['Consumption'][0]['Total Before Credit'],
-        'Total': item['Consumption'][0]['Total']
-      }));
+      const transformedData = jsonData.map(item => {
+        const operators = item['Operators'];
+        const lastOperator = operators.length > 0 ? operators[operators.length - 1] : 'N/A';
+        const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : 'N/A';
+        return {
+          'Thing Name': item['Thing Name'],
+          'IMSI': item['IMSI'],
+          'Operators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
+          'allOperators': operators, // Store all operators
+          'Data': item['Consumption'][0]['Data'],
+          'SMS': item['Consumption'][0]['Total'], // Assuming 'Total' represents SMS consumption
+          'Credit': item['Consumption'][0]['Credit'],
+          'Total Before Credit': item['Consumption'][0]['Total Before Credit'],
+          'Total': item['Consumption'][0]['Total']
+        };
+      });
       data.value = transformedData;
+      console.log("Transformed Data", transformedData);
     }
     loading.value = "idle";
   } catch (error) {
@@ -348,36 +353,5 @@ const DesactivateSim = async () => {
   }
 }
 
-function getLatestData(data) {
-  const latestDataMap = new Map();
-  data.forEach(item => {
-    if (!latestDataMap.has(item['IMSI'])) {
-      latestDataMap.set(item['IMSI'], item);
-    } else {
-      const existingItem = latestDataMap.get(item['IMSI']);
-      if (!existingItem['Data'] && item['Data']) {
-        existingItem['Data'] = item['Data'];
-      }
-    }
-  });
 
-  // If Data is still empty, use the second last value
-  latestDataMap.forEach((value, key) => {
-    if (!value['Data']) {
-      const historicalData = data.filter(item => item['IMSI'] === key);
-      if (historicalData.length > 1) {
-        value['Data'] = historicalData[historicalData.length - 2]['Data'];
-      }
-    }
-  });
-
-  return Array.from(latestDataMap.values());
-}
-
-const filteredData = computed(() => getLatestData(data.value));
-
-function getHistoricalData(IMSI) {
-  const historicalData = data.value.filter(item => item['IMSI'] === IMSI);
-  return historicalData.slice(0, -1); // Exclude the last value
-}
 </script>
