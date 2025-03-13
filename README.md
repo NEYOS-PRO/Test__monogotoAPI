@@ -1,28 +1,49 @@
-# Nuxt Minimal Starter
+# Test API Neyos Monogoto Project
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Ce projet est une application Nuxt pour l'API de monogoto. Il offre des fonctionnalités pour gérer les cartes SIM et les services associés.
 
-## Setup
+## Prérequis
 
-Make sure to install dependencies:
+- Node.js
+- Nuxt.js
 
-```bash
-# npm
-npm install
+## Installation
 
-# pnpm
-pnpm install
+1. Clonez le dépôt :
+    ```bash
+    git clone <URL_DU_DEPOT>
+    cd <NOM_DU_DEPOT>
+    ```
 
-# yarn
-yarn install
+2. Installez les dépendances :
+    ```bash
+    # npm
+    npm install
 
-# bun
-bun install
-```
+    # pnpm
+    pnpm install
 
-## Development Server
+    # yarn
+    yarn install
 
-Start the development server on `http://localhost:3000`:
+    # bun
+    bun install
+  ```
+
+## Fonctionnalités
+
+1. Activation/Désactivation des SIMs : Activez ou désactivez les SIMs sélectionnées.
+2. Pagination : Naviguez à travers les pages de données.
+3. Filtrage des opérateurs : Affichez uniquement les opérateurs pertinents pour chaque SIM.
+4. Affichage des détails : Affichez les détails des opérateurs pour chaque SIM sélectionnée.
+
+## API
+
+L'application interagit avec une API locale pour récupérer et mettre à jour les données des SIMs.
+
+## Serveur de développement
+
+Démarrez le serveur de développement sur `http://localhost:3000` :
 
 ```bash
 # npm
@@ -36,40 +57,4 @@ yarn dev
 
 # bun
 bun run dev
-```
 
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

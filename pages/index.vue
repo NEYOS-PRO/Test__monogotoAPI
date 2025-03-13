@@ -4,16 +4,6 @@
             <div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
                 <UButton
-                    icon="i-heroicons-arrow-path"
-                    size="sm"
-                    color="primary"
-                    variant="solid"
-                    label="Generating report"
-                    disabled
-                    :trailing="false"
-                />
-
-                <UButton
                     size="sm"
                     color="blue"
                     variant="solid"
@@ -191,10 +181,6 @@ function select(row) {
   } else {
     selected.value.splice(index, 1);
   }
-  /**
-   * Affichage de l'IMSI de la SIM sélectionnée
-   */
-  console.log(selected.value[0]['IMSI']);
 }
 
 const columns = [
@@ -254,11 +240,14 @@ function selectRange(duration) {
       // Transform the data to match the table columns
       const transformedData = jsonData.map(item => {
         const operators = item['Operators'];
-        const lastOperator = operators.length > 0 ? operators[operators.length - 1] : 'N/A';
-        const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : 'N/A';
+        const lastOperator = operators.length > 0 ? operators[operators.length - 1] : '';
+        const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : '';
+        const iccidMatch = item['Thing Name'].match(/ICCID (\d+)/);
+        const iccid = iccidMatch ? iccidMatch[1] : 'N/A';
         return {
           'Thing Name': item['Thing Name'],
           'IMSI': item['IMSI'],
+          'ICCID': iccid, // Extracted ICCID
           'Operators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
           'allOperators': operators, // Store all operators
           'Data': item['Consumption'][0]['Data'],
@@ -298,10 +287,12 @@ const modalMessageOpen = ref(false);
  */
 
 const ActivateSim = async () => {
-  const IMSI = selected.value[0]['IMSI'];
+   
+
+  const ICCID = selected.value[0]['ICCID'];
 
   try {
-    const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/ACTIVE`);
+    const response = await fetch(`http://localhost:3333/update_thing_status/${ICCID}/ACTIVE`);
 
     if (response.ok) {
       console.log('SIMs Activated successfully');
@@ -326,7 +317,7 @@ const ActivateSim = async () => {
  */
 const can_desactivate = ref(false);
 const DesactivateSim = async () => {
-  const IMSI = selected.value[0]['IMSI'];
+  const ICCID = selected.value[0]['ICCID'];
 
   if (can_desactivate.value === false) {
     selected.value = [];
@@ -334,7 +325,7 @@ const DesactivateSim = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:3333/update_thing_status/${IMSI}/SUSPENDED`);
+    const response = await fetch(`http://localhost:3333/update_thing_status/${ICCID}/SUSPENDED`);
 
     if (response.ok) {
       console.log('SIMs Desactivate successfully');
