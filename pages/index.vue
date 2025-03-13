@@ -56,10 +56,16 @@
          :columns="selectedColumns" :rows="data" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
-            
                 <div class="txt-xs">
-                  <UTable :columns="secondaryColumns" :rows="row.allOperators.filter(operator => operator !== '').map(operator => ({ Operators: operator }))" class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" />
-                    <!-- <pre>{{ row }}</pre> -->
+                  <UTable 
+                    :columns="secondaryColumns" 
+                    :rows="row.allOperators.filter(operator => operator !== '').map(operator => ({
+                      Operators: operator,
+                      Data: row.Consumption[operator]?.Data || 'N/A',
+                      Total: row.Consumption[operator]?.Total || 'N/A'
+                    }))" 
+                    class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" 
+                  />
                 </div>
             </template>
         </UTable>
@@ -195,6 +201,8 @@ const selectedColumns = ref([...columns]);
 
 const secondaryColumns = [
   { key: 'Operators', label: 'Operators' }, // Add Operators column
+  { key: 'Data', label: 'Data' },
+  { key: 'Total', label: 'Total' }
 
 ];
 
@@ -236,7 +244,7 @@ function selectRange(duration) {
     loading.value = "pending";
 
     if (response.ok) {
-      console.log(jsonData);
+      console.log("Data here : ", jsonData);
       // Transform the data to match the table columns
       const transformedData = jsonData.map(item => {
         const operators = item['Operators'];
@@ -244,17 +252,19 @@ function selectRange(duration) {
         const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : '';
         const iccidMatch = item['Thing Name'].match(/ICCID (\d+)/);
         const iccid = iccidMatch ? iccidMatch[1] : 'N/A';
+        const lastOperatorData = item['Consumption'][lastOperator] || {};
         return {
           'Thing Name': item['Thing Name'],
           'IMSI': item['IMSI'],
           'ICCID': iccid, // Extracted ICCID
           'Operators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
           'allOperators': operators, // Store all operators
-          'Data': item['Consumption'][0]['Data'],
-          'SMS': item['Consumption'][0]['Total'], // Assuming 'Total' represents SMS consumption
-          'Credit': item['Consumption'][0]['Credit'],
-          'Total Before Credit': item['Consumption'][0]['Total Before Credit'],
-          'Total': item['Consumption'][0]['Total']
+          'Consumption': item['Consumption'], // Store all consumption data
+          'Data': lastOperatorData['Data'] || 'N/A',
+          'SMS': lastOperatorData['Total'] || 'N/A', // Assuming 'Total' represents SMS consumption
+          'Credit': lastOperatorData['Credit'] || 'N/A',
+          'Total Before Credit': lastOperatorData['Total Before Credit'] || 'N/A',
+          'Total': lastOperatorData['Total'] || 'N/A'
         };
       });
       data.value = transformedData;
