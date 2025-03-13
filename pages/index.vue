@@ -207,10 +207,12 @@ const columns = [
 const selectedColumns = ref([...columns]);
 
 const secondaryColumns = [
+  { key: 'Thing Name', label: 'Thing Name' },
   { key: 'Data', label: 'Data' },
-  { key: 'SMS', label: 'SMS'},
-  { key: 'MO SMS', label: 'MO SMS' },
-  { key: 'MT SMS', label: 'MT SMS'}
+  { key: 'SMS', label: 'SMS' },
+  { key: 'Credit', label: 'Credit' },
+  { key: 'Total Before Credit', label: 'Total Before Credit' },
+  { key: 'Total', label: 'Total' }
 ];
 
 /***
@@ -256,18 +258,11 @@ function selectRange(duration) {
       const transformedData = jsonData.map(item => ({
         'Thing Name': item['Thing Name'],
         'IMSI': item['IMSI'],
-        'MSISDN': item['MSISDN'],
-        'Roaming Partner': item['Roaming Partner'],
-        'Data': item['Data'],
-        'SMS': item['SMS'],
-        'MO SMS': item['MO SMS'],
-        'MT SMS': item['MT SMS'],
-        'Voice': item['Voice'],
-        'MO VOICE': item['MO VOICE'],
-        'MT VOICE': item['MT VOICE'],
-        'Total Before Credit': item['Total Before Credit'],
-        'Credit': item['Credit'],
-        'Total': item['Total']
+        'Data': item['Consumption'][0]['Data'],
+        'SMS': item['Consumption'][0]['Total'], // Assuming 'Total' represents SMS consumption
+        'Credit': item['Consumption'][0]['Credit'],
+        'Total Before Credit': item['Consumption'][0]['Total Before Credit'],
+        'Total': item['Consumption'][0]['Total']
       }));
       data.value = transformedData;
     }
