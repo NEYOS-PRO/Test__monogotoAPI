@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="relative">
         <div class="flex justify-between items-center mx-3">   
             <div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
@@ -49,10 +49,13 @@
                 </template>
             </UPopover>
         </div>
-      
+
+        <!-- Spinner component -->
+        <!-- <Spinner v-if="loading === 'pending'" /> -->
 
         <UTable
-         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Generating report, please wait...' }"
+         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
+         :progress="{ color: 'info', animation: 'swing' }"
          :columns="selectedColumns" :rows="data" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
@@ -69,75 +72,69 @@
                 </div>
             </template>
         </UTable>
-    </div>
 
+        <!--Pagination-->
+        <UPagination  class="flex justify-center mt-3 mb-3" v-model="page" :page-count="pageCount" :total="items.length" :ui="{ rounded: 'first-of-type:rounded-s-md last-of-type:rounded-e-md' }">
+            <template #first="{ onClick, canGoFirst }">
+                <UTooltip text="First page">
+                    <UButton
+                    icon="i-heroicons-arrow-uturn-left"
+                    color="primary"
+                    :ui="{ rounded: 'rounded-full' }"
+                    class="rtl:[&_span:first-child]:rotate-180 me-2"
+                    :disabled="!canGoFirst"
+                    @click="onClick"
+                    />
+                </UTooltip>
+            </template>
 
+            <template #last="{ onClick, canGoLast }">
+                <UTooltip text="Last page">
+                    <UButton
+                    icon="i-heroicons-arrow-uturn-right-20-solid"
+                    color="primary"
+                    :ui="{ rounded: 'rounded-full' }"
+                    class="rtl:[&_span:last-child]:rotate-180 ms-2"
+                    :disabled="!canGoLast"
+                    @click="onClick"
+                    />
+                </UTooltip>
+            </template>
+        </UPagination>
 
-    <!--Pagination-->
-    <UPagination  class="flex justify-center mt-3 mb-3" v-model="page" :page-count="pageCount" :total="items.length" :ui="{ rounded: 'first-of-type:rounded-s-md last-of-type:rounded-e-md' }">
-        <template #first="{ onClick, canGoFirst }">
-            <UTooltip text="First page">
-                <UButton
-                icon="i-heroicons-arrow-uturn-left"
-                color="primary"
-                :ui="{ rounded: 'rounded-full' }"
-                class="rtl:[&_span:first-child]:rotate-180 me-2"
-                :disabled="!canGoFirst"
-                @click="onClick"
-                />
-            </UTooltip>
-        </template>
+        <!---Modal Altert Delete SIM-->
 
-        <template #last="{ onClick, canGoLast }">
-            <UTooltip text="Last page">
-                <UButton
-                icon="i-heroicons-arrow-uturn-right-20-solid"
-                color="primary"
-                :ui="{ rounded: 'rounded-full' }"
-                class="rtl:[&_span:last-child]:rotate-180 ms-2"
-                :disabled="!canGoLast"
-                @click="onClick"
-                />
-            </UTooltip>
-        </template>
-    </UPagination>
+        <UModal v-model="isModalOpen" prevent-close>
+          <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+            <template #header>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+                  Souhaitez-vous vraiment désactiver cette SIM ?
+                </h3>
+                <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
+              </div>
+            </template>
 
-  
-
-    <!---Modal Altert Delete SIM-->
-
-    <UModal v-model="isModalOpen" prevent-close>
-      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-        <template #header>
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-              Souhaitez-vous vraiment désactiver cette SIM ?
-            </h3>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
-          </div>
-        </template>
-
-        <div calss="p-4">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-                Vous êtes sur le point de désactiver la SIM sélectionnée. Voulez-vous continuer ?
-            </p>
-            <div class="flex justify-end mt-4">
-                <UButton color="gray" variant="ghost" label="Annuler" @click="isModalOpen = false" />
-                <UButton color="red" variant="solid" label="Désactiver" @click="DesactivateSim" />          
+            <div calss="p-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Vous êtes sur le point de désactiver la SIM sélectionnée. Voulez-vous continuer ?
+                </p>
+                <div class="flex justify-end mt-4">
+                    <UButton color="gray" variant="ghost" label="Annuler" @click="isModalOpen = false" />
+                    <UButton color="red" variant="solid" label="Désactiver" @click="DesactivateSim" />          
+                </div>
             </div>
-        </div>
-      </UCard>
-    </UModal>
+          </UCard>
+        </UModal>
 
-
-    <!--Modal Message-->
-    <UModal v-model="modalMessageOpen" :transition="false">
-      <div class="p-4 flex flex-row space-y-2">
-        <p>{{ modalMEssage }}</p>
-        <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
-      </div>
-    </UModal>
-
+        <!--Modal Message-->
+        <UModal v-model="modalMessageOpen" :transition="false">
+          <div class="p-4 flex flex-row space-y-2">
+            <p>{{ modalMEssage }}</p>
+            <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
+          </div>
+        </UModal>
+    </div>
 </template>
 
 <script setup lang="js">
@@ -145,6 +142,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
 import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
+const runtimeConfig = useRuntimeConfig(); 
 
 const selected = ref([]); 
 const data = ref([]);
@@ -190,7 +188,7 @@ function select(row) {
 }
 
 const columns = [
-  { key: 'Thing Name', label: 'Thing Name', sortable: true },
+  { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
   { key: 'Operators', label: 'Operators', sortable: true }, // Add Operators column
   { key: 'Data', label: 'Data', sortable: true },
@@ -238,13 +236,16 @@ function selectRange(duration) {
  */
 
  async function fetchReport() {
+  loading.value = "pending";
+  console.log("Loading => "+loading.value);
+
   try {
-    const response = await fetch(`http://localhost:3333/get_things_report/${start_date.value}/${end_date.value}`); 
+    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/get_things_report/${start_date.value}/${end_date.value}`); 
     const jsonData = await response.json();
-    loading.value = "pending";
+   
+    
 
     if (response.ok) {
-      console.log("Data here : ", jsonData);
       // Transform the data to match the table columns
       const transformedData = jsonData.map(item => {
         const operators = item['Operators'];
@@ -302,7 +303,7 @@ const ActivateSim = async () => {
   const ICCID = selected.value[0]['ICCID'];
 
   try {
-    const response = await fetch(`http://localhost:3333/update_thing_status/${ICCID}/ACTIVE`);
+    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
 
     if (response.ok) {
       console.log('SIMs Activated successfully');
@@ -335,7 +336,7 @@ const DesactivateSim = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:3333/update_thing_status/${ICCID}/SUSPENDED`);
+    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
 
     if (response.ok) {
       console.log('SIMs Desactivate successfully');
