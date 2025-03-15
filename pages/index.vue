@@ -56,7 +56,7 @@
         <UTable
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
          :progress="{ color: 'info', animation: 'swing' }"
-         :columns="selectedColumns" :rows="data" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="rows" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
                 <div class="txt-xs">
@@ -74,33 +74,7 @@
         </UTable>
 
         <!--Pagination-->
-        <UPagination  class="flex justify-center mt-3 mb-3" v-model="page" :page-count="pageCount" :total="items.length" :ui="{ rounded: 'first-of-type:rounded-s-md last-of-type:rounded-e-md' }">
-            <template #first="{ onClick, canGoFirst }">
-                <UTooltip text="First page">
-                    <UButton
-                    icon="i-heroicons-arrow-uturn-left"
-                    color="primary"
-                    :ui="{ rounded: 'rounded-full' }"
-                    class="rtl:[&_span:first-child]:rotate-180 me-2"
-                    :disabled="!canGoFirst"
-                    @click="onClick"
-                    />
-                </UTooltip>
-            </template>
-
-            <template #last="{ onClick, canGoLast }">
-                <UTooltip text="Last page">
-                    <UButton
-                    icon="i-heroicons-arrow-uturn-right-20-solid"
-                    color="primary"
-                    :ui="{ rounded: 'rounded-full' }"
-                    class="rtl:[&_span:last-child]:rotate-180 ms-2"
-                    :disabled="!canGoLast"
-                    @click="onClick"
-                    />
-                </UTooltip>
-            </template>
-        </UPagination>
+        <UPagination class="flex justify-center mt-3" v-model="page" :page-count="5" :total="items.length" />
 
         <!---Modal Altert Delete SIM-->
 
@@ -129,7 +103,7 @@
 
         <!--Modal Message-->
         <UModal v-model="modalMessageOpen" :transition="false">
-          <div class="p-4 flex flex-row space-y-2">
+          <div class="p-4 flex justify-between items-center flex-row space-y-2">
             <p>{{ modalMEssage }}</p>
             <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
           </div>
@@ -167,11 +141,11 @@ const expand = ref({
   row: {}
 });
 
-// const rows = computed(() => {
-//   const start = (page.value - 1) * pageCount;
-//   const end = start + pageCount;
-//   return items.value.slice(start, end);
-// });
+const rows = computed(() => {
+  const start = (page.value - 1) * pageCount;
+  const end = start + pageCount;
+  return items.value.slice(start, end);
+});
 
 /**
  * Recupération de l'id de la SIM sélectionnée...
