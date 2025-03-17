@@ -29,7 +29,6 @@ Ce projet est une application Nuxt pour l'API de monogoto. Il offre des fonction
     # bun
     bun install
   ```
-
 ## Fonctionnalités
 
 1. Activation/Désactivation des SIMs : Activez ou désactivez les SIMs sélectionnées.
