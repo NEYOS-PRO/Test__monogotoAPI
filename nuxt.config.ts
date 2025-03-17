@@ -6,8 +6,8 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   runtimeConfig: {
     public: {
-      TOKEN_API: process.env.NUXT_PUBLIC_TOKEN_API,
-      URL_REQUEST: process.env.URL_API
+      TOKEN_API: '',
+      URL_REQUEST: ''
     }
   },
 })
