@@ -166,6 +166,7 @@ function select(row) {
 const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
+  { key: 'Status', label: 'Status', sortable: true },
   { key: 'Operators', label: 'Operators', sortable: true }, // Add Operators column
   { key: 'Data', label: 'Data', sortable: true },
   { key: 'SMS', label: 'SMS', sortable: true }
@@ -213,13 +214,11 @@ function selectRange(duration) {
 
  async function fetchReport() {
   loading.value = "pending";
-  console.log("Loading => "+loading.value);
-
   try {
     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/get_things_report/${start_date.value}/${end_date.value}`); 
     const jsonData = await response.json();
    
-    
+    console.log("Data => ", jsonData);
 
     if (response.ok) {
       // Transform the data to match the table columns
@@ -241,11 +240,11 @@ function selectRange(duration) {
           'SMS': lastOperatorData['Total'] || 'N/A', // Assuming 'Total' represents SMS consumption
           'Credit': lastOperatorData['Credit'] || 'N/A',
           'Total Before Credit': lastOperatorData['Total Before Credit'] || 'N/A',
-          'Total': lastOperatorData['Total'] || 'N/A'
+          'Total': lastOperatorData['Total'] || 'N/A',
+          'Status': item['Status']
         };
       });
       data.value = transformedData;
-      console.log("Transformed Data", transformedData);
     }
     loading.value = "idle";
   } catch (error) {
@@ -332,4 +331,4 @@ const DesactivateSim = async () => {
 }
 
 
-</script>
+</script>+
