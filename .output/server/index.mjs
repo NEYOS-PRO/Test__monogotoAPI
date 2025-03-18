@@ -6,6 +6,7 @@ import 'node:url';
 import '@iconify/utils';
 import 'consola/core';
 import 'node:path';
+import 'node:module';
 
 const cert = process.env.NITRO_SSL_CERT;
 const key = process.env.NITRO_SSL_KEY;

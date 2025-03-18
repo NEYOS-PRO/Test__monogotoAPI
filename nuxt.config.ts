@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       TOKEN_API: '',
-      URL_REQUEST: ''
+      URL_REQUEST: process.env.URL_API
     }
   },
 })

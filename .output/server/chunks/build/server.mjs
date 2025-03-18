@@ -14,6 +14,7 @@ import 'node:url';
 import '@iconify/utils';
 import 'consola/core';
 import 'node:path';
+import 'node:module';
 
 var _a;
 if (!globalThis.$fetch) {
@@ -606,7 +607,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-DkRy-2ZO.mjs')
+    component: () => import('./index-e8eATJkO.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {

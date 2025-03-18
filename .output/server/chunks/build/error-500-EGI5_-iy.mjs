@@ -9,6 +9,7 @@ import 'node:url';
 import '@iconify/utils';
 import 'consola/core';
 import 'node:path';
+import 'node:module';
 import 'unhead';
 import '@unhead/shared';
 import 'vue-router';

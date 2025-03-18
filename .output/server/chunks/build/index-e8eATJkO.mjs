@@ -22,6 +22,7 @@ import 'node:url';
 import '@iconify/utils';
 import 'consola/core';
 import 'node:path';
+import 'node:module';
 
 const nuxtLinkProps = {
   to: {
@@ -7885,7 +7886,7 @@ const _sfc_main = {
       const _component_UModal = __nuxt_component_5;
       const _component_UCard = __nuxt_component_6;
       const _component_UIcon = __nuxt_component_7;
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "relative" }, _attrs))}><div class="flex justify-between items-center mx-3"><div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "relative" }, _attrs))}><div class="flex flex-col md:flex-row md:justify-between items-center mx-3"><div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">`);
       _push(ssrRenderComponent(_component_USelectMenu, {
         modelValue: selectedColumns.value,
         "onUpdate:modelValue": ($event) => selectedColumns.value = $event,
@@ -7894,7 +7895,7 @@ const _sfc_main = {
         placeholder: "Columns"
       }, null, _parent));
       _push(ssrRenderComponent(_component_UButton, {
-        size: "sm",
+        size: "xs",
         color: "blue",
         variant: "solid",
         label: "Activate",
@@ -7903,7 +7904,7 @@ const _sfc_main = {
         onClick: ActivateSim
       }, null, _parent));
       _push(ssrRenderComponent(_component_UButton, {
-        size: "sm",
+        size: "xs",
         color: "red",
         variant: "solid",
         label: "Desactivate",
@@ -7915,7 +7916,7 @@ const _sfc_main = {
       _push(ssrRenderComponent(_component_UPopover, { popper: { placement: "bottom-start" } }, {
         panel: withCtx(({ close }, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="flex items-center sm:divide-x divide-gray-200 dark:divide-gray-800"${_scopeId}><div class="hidden sm:flex flex-col py-4"${_scopeId}><!--[-->`);
+            _push2(`<div class="flex items-center"${_scopeId}><div class="hidden sm:flex flex-col py-4"${_scopeId}><!--[-->`);
             ssrRenderList(ranges, (range, index) => {
               _push2(ssrRenderComponent(_component_UButton, {
                 key: index,
@@ -7936,7 +7937,7 @@ const _sfc_main = {
             _push2(`</div>`);
           } else {
             return [
-              createVNode("div", { class: "flex items-center sm:divide-x divide-gray-200 dark:divide-gray-800" }, [
+              createVNode("div", { class: "flex items-center" }, [
                 createVNode("div", { class: "hidden sm:flex flex-col py-4" }, [
                   (openBlock(), createBlock(Fragment, null, renderList(ranges, (range, index) => {
                     return createVNode(_component_UButton, {
@@ -7988,6 +7989,7 @@ const _sfc_main = {
       }, _parent));
       _push(`</div>`);
       _push(ssrRenderComponent(_component_UTable, {
+        class: "txt-xs",
         "loading-state": { icon: "i-heroicons-arrow-path-20-solid", size: 56, label: "Generating report, please wait..." },
         progress: { color: "info", animation: "swing" },
         columns: selectedColumns.value,
@@ -8001,7 +8003,7 @@ const _sfc_main = {
       }, {
         expand: withCtx(({ row }, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="txt-xs"${_scopeId}>`);
+            _push2(`<div${_scopeId}>`);
             _push2(ssrRenderComponent(_component_UTable, {
               columns: secondaryColumns,
               rows: row.allOperators.filter((operator) => operator !== "").map((operator) => {
@@ -8017,7 +8019,7 @@ const _sfc_main = {
             _push2(`</div>`);
           } else {
             return [
-              createVNode("div", { class: "txt-xs" }, [
+              createVNode("div", null, [
                 createVNode(_component_UTable, {
                   columns: secondaryColumns,
                   rows: row.allOperators.filter((operator) => operator !== "").map((operator) => {
@@ -8038,6 +8040,7 @@ const _sfc_main = {
       }, _parent));
       _push(ssrRenderComponent(_component_UPagination, {
         class: "flex justify-center mt-3",
+        size: "xs",
         modelValue: page.value,
         "onUpdate:modelValue": ($event) => page.value = $event,
         "page-count": 5,
@@ -8197,4 +8200,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=index-DkRy-2ZO.mjs.map
+//# sourceMappingURL=index-e8eATJkO.mjs.map

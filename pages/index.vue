@@ -1,10 +1,10 @@
 <template>
     <div class="relative">
-        <div class="flex justify-between items-center mx-3">   
-            <div class="flex space-x-3 px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
-                <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
+        <div class="flex flex-col md:flex-row md:justify-between items-center mx-3">   
+            <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
+                <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
                 <UButton
-                    size="sm"
+                    size="xs"
                     color="blue"
                     variant="solid"
                     label="Activate"
@@ -14,7 +14,7 @@
                 />
 
                 <UButton
-                    size="sm"
+                    size="xs"
                     color="red"
                     variant="solid"
                     label="Desactivate"
@@ -29,7 +29,7 @@
                 </UButton>
 
                 <template #panel="{ close }">
-                <div class="flex items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
+                <div class="flex items-center">
                     <div class="hidden sm:flex flex-col py-4">
                         <UButton
                             v-for="(range, index) in ranges"
@@ -54,12 +54,13 @@
         <!-- <Spinner v-if="loading === 'pending'" /> -->
 
         <UTable
+         class="txt-xs"
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
          :progress="{ color: 'info', animation: 'swing' }"
          :columns="selectedColumns" :rows="rows" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
-                <div class="txt-xs">
+                <div>
                   <UTable 
                     :columns="secondaryColumns" 
                     :rows="row.allOperators.filter(operator => operator !== '').map(operator => ({
@@ -68,13 +69,14 @@
                       Total: row.Consumption[operator]?.Total || 'N/A'
                     }))" 
                     class="bg-slate-100 dark:bg-slate-800 dark:text-slate-50" 
+  
                   />
                 </div>
             </template>
         </UTable>
 
         <!--Pagination-->
-        <UPagination class="flex justify-center mt-3" v-model="page" :page-count="5" :total="items.length" />
+        <UPagination class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
 
         <!---Modal Altert Delete SIM-->
 
