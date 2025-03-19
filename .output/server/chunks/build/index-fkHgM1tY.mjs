@@ -7763,10 +7763,14 @@ const _sfc_main = {
     const columns = [
       { key: "ICCID", label: "ICCID", sortable: true },
       { key: "IMSI", label: "IMSI", sortable: true },
-      { key: "Operators", label: "Operators", sortable: true },
-      // Add Operators column
-      { key: "Data", label: "Data", sortable: true },
-      { key: "SMS", label: "SMS", sortable: true }
+      { key: "Status", label: "Status", sortable: true },
+      { key: "lastOperators", label: "Last Operators", sortable: true },
+      // New column
+      { key: "lastData", label: "Last Data", sortable: true },
+      // New column
+      { key: "SMS", label: "SMS", sortable: true },
+      { key: "totalData", label: "Total Data", sortable: true }
+      // New column
     ];
     const selectedColumns = ref([...columns]);
     const secondaryColumns = [
@@ -7794,10 +7798,10 @@ const _sfc_main = {
     }
     async function fetchReport() {
       loading.value = "pending";
-      console.log("Loading => " + loading.value);
       try {
         const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/get_things_report/${start_date.value}/${end_date.value}`);
         const jsonData = await response.json();
+        console.log("Data => ", jsonData);
         if (response.ok) {
           const transformedData = jsonData.map((item) => {
             const operators = item["Operators"];
@@ -7805,28 +7809,33 @@ const _sfc_main = {
             const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : "";
             const iccidMatch = item["Thing Name"].match(/ICCID (\d+)/);
             const iccid = iccidMatch ? iccidMatch[1] : "N/A";
-            const lastOperatorData = item["Consumption"][lastOperator] || {};
+            const lastOperatorData = item["Consumption"][lastOperator];
+            const totalData = item["Consumption"][""] ? item["Consumption"][""]["Data"] : "N/A";
             return {
               "Thing Name": item["Thing Name"],
               "IMSI": item["IMSI"],
               "ICCID": iccid,
               // Extracted ICCID
-              "Operators": lastOperator || secondLastOperator,
+              "lastOperators": lastOperator || secondLastOperator,
               // Use last operator or second last if last is empty
               "allOperators": operators,
               // Store all operators
               "Consumption": item["Consumption"],
               // Store all consumption data
-              "Data": lastOperatorData["Data"] || "N/A",
+              // 'Data': lastOperatorData['Data'] || 'N/A',
               "SMS": lastOperatorData["Total"] || "N/A",
               // Assuming 'Total' represents SMS consumption
               "Credit": lastOperatorData["Credit"] || "N/A",
               "Total Before Credit": lastOperatorData["Total Before Credit"] || "N/A",
-              "Total": lastOperatorData["Total"] || "N/A"
+              "Total": lastOperatorData["Total"] || "N/A",
+              "Status": item["Status"],
+              "lastData": lastOperatorData["Data"] || "N/A",
+              // New field
+              "totalData": totalData
+              // New field
             };
           });
           data.value = transformedData;
-          console.log("Transformed Data", transformedData);
         }
         loading.value = "idle";
       } catch (error) {
@@ -8200,4 +8209,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=index-e8eATJkO.mjs.map
+//# sourceMappingURL=index-fkHgM1tY.mjs.map

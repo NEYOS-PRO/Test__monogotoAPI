@@ -167,9 +167,10 @@ const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
   { key: 'Status', label: 'Status', sortable: true },
-  { key: 'Operators', label: 'Operators', sortable: true }, // Add Operators column
-  { key: 'Data', label: 'Data', sortable: true },
-  { key: 'SMS', label: 'SMS', sortable: true }
+  { key: 'lastOperators', label: 'Last Operators', sortable: true }, // New column
+  { key: 'lastData', label: 'Last Data', sortable: true }, // New column
+  { key: 'SMS', label: 'SMS', sortable: true },
+  { key: 'totalData', label: 'Total Data', sortable: true } // New column
 ];
 
 const selectedColumns = ref([...columns]);
@@ -228,20 +229,23 @@ function selectRange(duration) {
         const secondLastOperator = operators.length > 1 ? operators[operators.length - 2] : '';
         const iccidMatch = item['Thing Name'].match(/ICCID (\d+)/);
         const iccid = iccidMatch ? iccidMatch[1] : 'N/A';
-        const lastOperatorData = item['Consumption'][lastOperator] || {};
+        const lastOperatorData = item['Consumption'][lastOperator];
+        const totalData = item['Consumption'][''] ? item['Consumption']['']['Data'] : 'N/A'; // Total Data from empty key
         return {
           'Thing Name': item['Thing Name'],
           'IMSI': item['IMSI'],
           'ICCID': iccid, // Extracted ICCID
-          'Operators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
+          'lastOperators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
           'allOperators': operators, // Store all operators
           'Consumption': item['Consumption'], // Store all consumption data
-          'Data': lastOperatorData['Data'] || 'N/A',
+          // 'Data': lastOperatorData['Data'] || 'N/A',
           'SMS': lastOperatorData['Total'] || 'N/A', // Assuming 'Total' represents SMS consumption
           'Credit': lastOperatorData['Credit'] || 'N/A',
           'Total Before Credit': lastOperatorData['Total Before Credit'] || 'N/A',
           'Total': lastOperatorData['Total'] || 'N/A',
-          'Status': item['Status']
+          'Status': item['Status'],
+          'lastData': lastOperatorData['Data'] || 'N/A', // New field
+          'totalData': totalData // New field
         };
       });
       data.value = transformedData;
@@ -331,4 +335,4 @@ const DesactivateSim = async () => {
 }
 
 
-</script>+
+</script>
