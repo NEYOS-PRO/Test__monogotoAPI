@@ -169,7 +169,7 @@ const columns = [
   { key: 'Status', label: 'Status', sortable: true },
   { key: 'lastOperators', label: 'Last Operators', sortable: true }, // New column
   { key: 'lastData', label: 'Last Data', sortable: true }, // New column
-  { key: 'SMS', label: 'SMS', sortable: true },
+  // { key: 'SMS', label: 'SMS', sortable: true },
   { key: 'totalData', label: 'Total Data', sortable: true } // New column
 ];
 
@@ -178,7 +178,7 @@ const selectedColumns = ref([...columns]);
 const secondaryColumns = [
   { key: 'Operators', label: 'Operators' }, // Add Operators column
   { key: 'Data', label: 'Data' },
-  { key: 'Total', label: 'Total' }
+  // { key: 'Total', label: 'Total' }
 
 ];
 
