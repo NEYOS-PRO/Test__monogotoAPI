@@ -305,21 +305,17 @@ const ActivateSim = async () => {
 /**
  * Desactivate des SIMs
  */
-const can_desactivate = ref(false);
 const DesactivateSim = async () => {
+
   const ICCID = selected.value[0]['ICCID'];
 
-  if (can_desactivate.value === false) {
-    selected.value = [];
-    return false;
-  }
+  console.log('ICCID:', ICCID);
 
   try {
     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
 
     if (response.ok) {
       console.log('SIMs Desactivate successfully');
-      modalMEssage.value = 'SIMs Desactivate successfully';
       selected.value = [];
       modalMessageOpen.value = true;
       /**
@@ -327,10 +323,14 @@ const DesactivateSim = async () => {
        */
       setTimeout(() => {
         modalMessageOpen.value = false;
+        selected.value = [];
       }, 2000);
+    } else {
+      const errorText = await response.text();
+      console.log('Failed to desactivate SIM:', errorText);
     }
   } catch (error) {
-    console.log(error);
+    console.log('Error:', error);
   }
 }
 
