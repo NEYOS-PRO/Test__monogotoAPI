@@ -149,6 +149,7 @@ const rows = computed(() => {
   return items.value.slice(start, end);
 });
 
+
 /**
  * Recupération de l'id de la SIM sélectionnée...
  * @param row 
@@ -164,15 +165,14 @@ function select(row) {
 }
 
 const columns = [
+  { key: 'Thing Name', label: 'Thing Name', sortable: true },
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
   { key: 'Status', label: 'Status', sortable: true },
-  { key: 'lastOperators', label: 'Last Operators', sortable: true }, // New column
-  { key: 'lastData', label: 'Last Data', sortable: true }, // New column
-  // { key: 'SMS', label: 'SMS', sortable: true },
-  { key: 'totalData', label: 'Total Data', sortable: true } // New column
+  { key: 'lastOperators', label: 'Last Operators', sortable: true }, 
+  { key: 'lastData', label: 'Last Data', sortable: true },
+  { key: 'totalData', label: 'Total Data', sortable: true }
 ];
-
 const selectedColumns = ref([...columns]);
 
 const secondaryColumns = [
@@ -238,7 +238,6 @@ function selectRange(duration) {
           'lastOperators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
           'allOperators': operators, // Store all operators
           'Consumption': item['Consumption'], // Store all consumption data
-          // 'Data': lastOperatorData['Data'] || 'N/A',
           'SMS': lastOperatorData['Total'] || 'N/A', // Assuming 'Total' represents SMS consumption
           'Credit': lastOperatorData['Credit'] || 'N/A',
           'Total Before Credit': lastOperatorData['Total Before Credit'] || 'N/A',
@@ -249,6 +248,7 @@ function selectRange(duration) {
         };
       });
       data.value = transformedData;
+      console.log('Data transform+>', transformedData);
     }
     loading.value = "idle";
   } catch (error) {
@@ -277,7 +277,6 @@ const modalMessageOpen = ref(false);
  */
 
 const ActivateSim = async () => {
-   
 
   const ICCID = selected.value[0]['ICCID'];
 
@@ -292,9 +291,10 @@ const ActivateSim = async () => {
       /**
        * Après 2 sec désactivé le modal
        */
-      setTimeout(() => {
+      setTimeout(async () => {
         modalMessageOpen.value = false;
         selected.value = [];
+        await fetchReport(); // Fetch updated data
       }, 2000);
     }
   } catch (error) {
@@ -316,14 +316,17 @@ const DesactivateSim = async () => {
 
     if (response.ok) {
       console.log('SIMs Desactivate successfully');
+      modalMEssage.value = 'SIMs Desactivate successfully';
       selected.value = [];
       modalMessageOpen.value = true;
+      isModalOpen.value = false;
       /**
        * Après 2 sec désactivé le modal
        */
-      setTimeout(() => {
+      setTimeout(async () => {
         modalMessageOpen.value = false;
         selected.value = [];
+        await fetchReport(); // Fetch updated data
       }, 2000);
     } else {
       const errorText = await response.text();
