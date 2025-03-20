@@ -5,22 +5,21 @@ import { fileURLToPath } from 'node:url';
 import { getIcons } from '@iconify/utils';
 import { createConsola as createConsola$1 } from 'consola/core';
 import { resolve as resolve$1, dirname as dirname$1, join } from 'node:path';
-import { createRequire } from 'node:module';
 
-const suspectProtoRx = /"(?:_|\\u0{2}5[Ff]){2}(?:p|\\u0{2}70)(?:r|\\u0{2}72)(?:o|\\u0{2}6[Ff])(?:t|\\u0{2}74)(?:o|\\u0{2}6[Ff])(?:_|\\u0{2}5[Ff]){2}"\s*:/;
-const suspectConstructorRx = /"(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|\\u0073)(?:t|\\u0074)(?:r|\\u0072)(?:u|\\u0075)(?:c|\\u0063)(?:t|\\u0074)(?:o|\\u006[Ff])(?:r|\\u0072)"\s*:/;
-const JsonSigRx = /^\s*["[{]|^\s*-?\d{1,16}(\.\d{1,17})?([Ee][+-]?\d+)?\s*$/;
-function jsonParseTransform(key, value) {
+const suspectProtoRx$1 = /"(?:_|\\u0{2}5[Ff]){2}(?:p|\\u0{2}70)(?:r|\\u0{2}72)(?:o|\\u0{2}6[Ff])(?:t|\\u0{2}74)(?:o|\\u0{2}6[Ff])(?:_|\\u0{2}5[Ff]){2}"\s*:/;
+const suspectConstructorRx$1 = /"(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|\\u0073)(?:t|\\u0074)(?:r|\\u0072)(?:u|\\u0075)(?:c|\\u0063)(?:t|\\u0074)(?:o|\\u006[Ff])(?:r|\\u0072)"\s*:/;
+const JsonSigRx$1 = /^\s*["[{]|^\s*-?\d{1,16}(\.\d{1,17})?([Ee][+-]?\d+)?\s*$/;
+function jsonParseTransform$1(key, value) {
   if (key === "__proto__" || key === "constructor" && value && typeof value === "object" && "prototype" in value) {
-    warnKeyDropped(key);
+    warnKeyDropped$1(key);
     return;
   }
   return value;
 }
-function warnKeyDropped(key) {
+function warnKeyDropped$1(key) {
   console.warn(`[destr] Dropping "${key}" key to prevent prototype pollution.`);
 }
-function destr(value, options = {}) {
+function destr$1(value, options = {}) {
   if (typeof value !== "string") {
     return value;
   }
@@ -55,18 +54,18 @@ function destr(value, options = {}) {
       return Number.NEGATIVE_INFINITY;
     }
   }
-  if (!JsonSigRx.test(value)) {
+  if (!JsonSigRx$1.test(value)) {
     if (options.strict) {
       throw new SyntaxError("[destr] Invalid JSON");
     }
     return value;
   }
   try {
-    if (suspectProtoRx.test(value) || suspectConstructorRx.test(value)) {
+    if (suspectProtoRx$1.test(value) || suspectConstructorRx$1.test(value)) {
       if (options.strict) {
         throw new Error("[destr] Possible prototype pollution");
       }
-      return JSON.parse(value, jsonParseTransform);
+      return JSON.parse(value, jsonParseTransform$1);
     }
     return JSON.parse(value);
   } catch (error) {
@@ -77,26 +76,26 @@ function destr(value, options = {}) {
   }
 }
 
-const HASH_RE = /#/g;
-const AMPERSAND_RE = /&/g;
-const SLASH_RE = /\//g;
-const EQUAL_RE = /=/g;
-const PLUS_RE = /\+/g;
-const ENC_CARET_RE = /%5e/gi;
-const ENC_BACKTICK_RE = /%60/gi;
-const ENC_PIPE_RE = /%7c/gi;
-const ENC_SPACE_RE = /%20/gi;
+const HASH_RE$1 = /#/g;
+const AMPERSAND_RE$1 = /&/g;
+const SLASH_RE$1 = /\//g;
+const EQUAL_RE$1 = /=/g;
+const PLUS_RE$1 = /\+/g;
+const ENC_CARET_RE$1 = /%5e/gi;
+const ENC_BACKTICK_RE$1 = /%60/gi;
+const ENC_PIPE_RE$1 = /%7c/gi;
+const ENC_SPACE_RE$1 = /%20/gi;
 const ENC_SLASH_RE = /%2f/gi;
-function encode(text) {
-  return encodeURI("" + text).replace(ENC_PIPE_RE, "|");
+function encode$1(text) {
+  return encodeURI("" + text).replace(ENC_PIPE_RE$1, "|");
 }
-function encodeQueryValue(input) {
-  return encode(typeof input === "string" ? input : JSON.stringify(input)).replace(PLUS_RE, "%2B").replace(ENC_SPACE_RE, "+").replace(HASH_RE, "%23").replace(AMPERSAND_RE, "%26").replace(ENC_BACKTICK_RE, "`").replace(ENC_CARET_RE, "^").replace(SLASH_RE, "%2F");
+function encodeQueryValue$1(input) {
+  return encode$1(typeof input === "string" ? input : JSON.stringify(input)).replace(PLUS_RE$1, "%2B").replace(ENC_SPACE_RE$1, "+").replace(HASH_RE$1, "%23").replace(AMPERSAND_RE$1, "%26").replace(ENC_BACKTICK_RE$1, "`").replace(ENC_CARET_RE$1, "^").replace(SLASH_RE$1, "%2F");
 }
-function encodeQueryKey(text) {
-  return encodeQueryValue(text).replace(EQUAL_RE, "%3D");
+function encodeQueryKey$1(text) {
+  return encodeQueryValue$1(text).replace(EQUAL_RE$1, "%3D");
 }
-function decode(text = "") {
+function decode$1(text = "") {
   try {
     return decodeURIComponent("" + text);
   } catch {
@@ -104,16 +103,16 @@ function decode(text = "") {
   }
 }
 function decodePath(text) {
-  return decode(text.replace(ENC_SLASH_RE, "%252F"));
+  return decode$1(text.replace(ENC_SLASH_RE, "%252F"));
 }
-function decodeQueryKey(text) {
-  return decode(text.replace(PLUS_RE, " "));
+function decodeQueryKey$1(text) {
+  return decode$1(text.replace(PLUS_RE$1, " "));
 }
-function decodeQueryValue(text) {
-  return decode(text.replace(PLUS_RE, " "));
+function decodeQueryValue$1(text) {
+  return decode$1(text.replace(PLUS_RE$1, " "));
 }
 
-function parseQuery(parametersString = "") {
+function parseQuery$1(parametersString = "") {
   const object = {};
   if (parametersString[0] === "?") {
     parametersString = parametersString.slice(1);
@@ -123,11 +122,11 @@ function parseQuery(parametersString = "") {
     if (s.length < 2) {
       continue;
     }
-    const key = decodeQueryKey(s[1]);
+    const key = decodeQueryKey$1(s[1]);
     if (key === "__proto__" || key === "constructor") {
       continue;
     }
-    const value = decodeQueryValue(s[2] || "");
+    const value = decodeQueryValue$1(s[2] || "");
     if (object[key] === void 0) {
       object[key] = value;
     } else if (Array.isArray(object[key])) {
@@ -138,83 +137,49 @@ function parseQuery(parametersString = "") {
   }
   return object;
 }
-function encodeQueryItem(key, value) {
+function encodeQueryItem$1(key, value) {
   if (typeof value === "number" || typeof value === "boolean") {
     value = String(value);
   }
   if (!value) {
-    return encodeQueryKey(key);
+    return encodeQueryKey$1(key);
   }
   if (Array.isArray(value)) {
-    return value.map((_value) => `${encodeQueryKey(key)}=${encodeQueryValue(_value)}`).join("&");
+    return value.map((_value) => `${encodeQueryKey$1(key)}=${encodeQueryValue$1(_value)}`).join("&");
   }
-  return `${encodeQueryKey(key)}=${encodeQueryValue(value)}`;
+  return `${encodeQueryKey$1(key)}=${encodeQueryValue$1(value)}`;
 }
-function stringifyQuery(query) {
-  return Object.keys(query).filter((k) => query[k] !== void 0).map((k) => encodeQueryItem(k, query[k])).filter(Boolean).join("&");
+function stringifyQuery$1(query) {
+  return Object.keys(query).filter((k) => query[k] !== void 0).map((k) => encodeQueryItem$1(k, query[k])).filter(Boolean).join("&");
 }
 
-const PROTOCOL_STRICT_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{1,2})/;
-const PROTOCOL_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{2})?/;
-const PROTOCOL_RELATIVE_REGEX = /^([/\\]\s*){2,}[^/\\]/;
-const PROTOCOL_SCRIPT_RE = /^[\s\0]*(blob|data|javascript|vbscript):$/i;
-const TRAILING_SLASH_RE = /\/$|\/\?|\/#/;
-const JOIN_LEADING_SLASH_RE = /^\.?\//;
-function hasProtocol(inputString, opts = {}) {
+const PROTOCOL_STRICT_REGEX$1 = /^[\s\w\0+.-]{2,}:([/\\]{1,2})/;
+const PROTOCOL_REGEX$1 = /^[\s\w\0+.-]{2,}:([/\\]{2})?/;
+const PROTOCOL_RELATIVE_REGEX$1 = /^([/\\]\s*){2,}[^/\\]/;
+const JOIN_LEADING_SLASH_RE$1 = /^\.?\//;
+function hasProtocol$1(inputString, opts = {}) {
   if (typeof opts === "boolean") {
     opts = { acceptRelative: opts };
   }
   if (opts.strict) {
-    return PROTOCOL_STRICT_REGEX.test(inputString);
+    return PROTOCOL_STRICT_REGEX$1.test(inputString);
   }
-  return PROTOCOL_REGEX.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX.test(inputString) : false);
+  return PROTOCOL_REGEX$1.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX$1.test(inputString) : false);
 }
-function isScriptProtocol(protocol) {
-  return !!protocol && PROTOCOL_SCRIPT_RE.test(protocol);
-}
-function hasTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
+function hasTrailingSlash$1(input = "", respectQueryAndFragment) {
+  {
     return input.endsWith("/");
   }
-  return TRAILING_SLASH_RE.test(input);
 }
-function withoutTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
-    return (hasTrailingSlash(input) ? input.slice(0, -1) : input) || "/";
+function withoutTrailingSlash$1(input = "", respectQueryAndFragment) {
+  {
+    return (hasTrailingSlash$1(input) ? input.slice(0, -1) : input) || "/";
   }
-  if (!hasTrailingSlash(input, true)) {
-    return input || "/";
-  }
-  let path = input;
-  let fragment = "";
-  const fragmentIndex = input.indexOf("#");
-  if (fragmentIndex >= 0) {
-    path = input.slice(0, fragmentIndex);
-    fragment = input.slice(fragmentIndex);
-  }
-  const [s0, ...s] = path.split("?");
-  const cleanPath = s0.endsWith("/") ? s0.slice(0, -1) : s0;
-  return (cleanPath || "/") + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
 }
-function withTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
+function withTrailingSlash$1(input = "", respectQueryAndFragment) {
+  {
     return input.endsWith("/") ? input : input + "/";
   }
-  if (hasTrailingSlash(input, true)) {
-    return input || "/";
-  }
-  let path = input;
-  let fragment = "";
-  const fragmentIndex = input.indexOf("#");
-  if (fragmentIndex >= 0) {
-    path = input.slice(0, fragmentIndex);
-    fragment = input.slice(fragmentIndex);
-    if (!path) {
-      return fragment;
-    }
-  }
-  const [s0, ...s] = path.split("?");
-  return s0 + "/" + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
 }
 function hasLeadingSlash(input = "") {
   return input.startsWith("/");
@@ -222,48 +187,48 @@ function hasLeadingSlash(input = "") {
 function withLeadingSlash(input = "") {
   return hasLeadingSlash(input) ? input : "/" + input;
 }
-function withBase(input, base) {
-  if (isEmptyURL(base) || hasProtocol(input)) {
+function withBase$1(input, base) {
+  if (isEmptyURL$1(base) || hasProtocol$1(input)) {
     return input;
   }
-  const _base = withoutTrailingSlash(base);
+  const _base = withoutTrailingSlash$1(base);
   if (input.startsWith(_base)) {
     return input;
   }
-  return joinURL(_base, input);
+  return joinURL$1(_base, input);
 }
 function withoutBase(input, base) {
-  if (isEmptyURL(base)) {
+  if (isEmptyURL$1(base)) {
     return input;
   }
-  const _base = withoutTrailingSlash(base);
+  const _base = withoutTrailingSlash$1(base);
   if (!input.startsWith(_base)) {
     return input;
   }
   const trimmed = input.slice(_base.length);
   return trimmed[0] === "/" ? trimmed : "/" + trimmed;
 }
-function withQuery(input, query) {
-  const parsed = parseURL(input);
-  const mergedQuery = { ...parseQuery(parsed.search), ...query };
-  parsed.search = stringifyQuery(mergedQuery);
-  return stringifyParsedURL(parsed);
+function withQuery$1(input, query) {
+  const parsed = parseURL$1(input);
+  const mergedQuery = { ...parseQuery$1(parsed.search), ...query };
+  parsed.search = stringifyQuery$1(mergedQuery);
+  return stringifyParsedURL$1(parsed);
 }
 function getQuery$1(input) {
-  return parseQuery(parseURL(input).search);
+  return parseQuery$1(parseURL$1(input).search);
 }
-function isEmptyURL(url) {
+function isEmptyURL$1(url) {
   return !url || url === "/";
 }
-function isNonEmptyURL(url) {
+function isNonEmptyURL$1(url) {
   return url && url !== "/";
 }
-function joinURL(base, ...input) {
+function joinURL$1(base, ...input) {
   let url = base || "";
-  for (const segment of input.filter((url2) => isNonEmptyURL(url2))) {
+  for (const segment of input.filter((url2) => isNonEmptyURL$1(url2))) {
     if (url) {
-      const _segment = segment.replace(JOIN_LEADING_SLASH_RE, "");
-      url = withTrailingSlash(url) + _segment;
+      const _segment = segment.replace(JOIN_LEADING_SLASH_RE$1, "");
+      url = withTrailingSlash$1(url) + _segment;
     } else {
       url = segment;
     }
@@ -284,7 +249,7 @@ function joinRelativeURL(..._input) {
         continue;
       }
       if (s === "..") {
-        if (segments.length === 1 && hasProtocol(segments[0])) {
+        if (segments.length === 1 && hasProtocol$1(segments[0])) {
           continue;
         }
         segments.pop();
@@ -315,8 +280,8 @@ function joinRelativeURL(..._input) {
   return url;
 }
 
-const protocolRelative = Symbol.for("ufo:protocolRelative");
-function parseURL(input = "", defaultProto) {
+const protocolRelative$1 = Symbol.for("ufo:protocolRelative");
+function parseURL$1(input = "", defaultProto) {
   const _specialProtoMatch = input.match(
     /^[\s\0]*(blob:|data:|javascript:|vbscript:)(.*)/i
   );
@@ -332,15 +297,15 @@ function parseURL(input = "", defaultProto) {
       hash: ""
     };
   }
-  if (!hasProtocol(input, { acceptRelative: true })) {
-    return defaultProto ? parseURL(defaultProto + input) : parsePath(input);
+  if (!hasProtocol$1(input, { acceptRelative: true })) {
+    return defaultProto ? parseURL$1(defaultProto + input) : parsePath$1(input);
   }
   const [, protocol = "", auth, hostAndPath = ""] = input.replace(/\\/g, "/").match(/^[\s\0]*([\w+.-]{2,}:)?\/\/([^/@]+@)?(.*)/) || [];
   let [, host = "", path = ""] = hostAndPath.match(/([^#/?]*)(.*)?/) || [];
   if (protocol === "file:") {
     path = path.replace(/\/(?=[A-Za-z]:)/, "");
   }
-  const { pathname, search, hash } = parsePath(path);
+  const { pathname, search, hash } = parsePath$1(path);
   return {
     protocol: protocol.toLowerCase(),
     auth: auth ? auth.slice(0, Math.max(0, auth.length - 1)) : "",
@@ -348,10 +313,10 @@ function parseURL(input = "", defaultProto) {
     pathname,
     search,
     hash,
-    [protocolRelative]: !protocol
+    [protocolRelative$1]: !protocol
   };
 }
-function parsePath(input = "") {
+function parsePath$1(input = "") {
   const [pathname = "", search = "", hash = ""] = (input.match(/([^#?]*)(\?[^#]*)?(#.*)?/) || []).splice(1);
   return {
     pathname,
@@ -359,17 +324,17 @@ function parsePath(input = "") {
     hash
   };
 }
-function stringifyParsedURL(parsed) {
+function stringifyParsedURL$1(parsed) {
   const pathname = parsed.pathname || "";
   const search = parsed.search ? (parsed.search.startsWith("?") ? "" : "?") + parsed.search : "";
   const hash = parsed.hash || "";
   const auth = parsed.auth ? parsed.auth + "@" : "";
   const host = parsed.host || "";
-  const proto = parsed.protocol || parsed[protocolRelative] ? (parsed.protocol || "") + "//" : "";
+  const proto = parsed.protocol || parsed[protocolRelative$1] ? (parsed.protocol || "") + "//" : "";
   return proto + auth + host + pathname + search + hash;
 }
 
-const defaults = Object.freeze({
+const defaults$1 = Object.freeze({
   ignoreUnknown: false,
   respectType: false,
   respectFunctionNames: false,
@@ -381,22 +346,22 @@ const defaults = Object.freeze({
   excludeValues: void 0,
   replacer: void 0
 });
-function objectHash(object, options) {
+function objectHash$1(object, options) {
   if (options) {
-    options = { ...defaults, ...options };
+    options = { ...defaults$1, ...options };
   } else {
-    options = defaults;
+    options = defaults$1;
   }
-  const hasher = createHasher(options);
+  const hasher = createHasher$1(options);
   hasher.dispatch(object);
   return hasher.toString();
 }
-const defaultPrototypesKeys = Object.freeze([
+const defaultPrototypesKeys$1 = Object.freeze([
   "prototype",
   "__proto__",
   "constructor"
 ]);
-function createHasher(options) {
+function createHasher$1(options) {
   let buff = "";
   let context = /* @__PURE__ */ new Map();
   const write = (str) => {
@@ -451,8 +416,8 @@ function createHasher(options) {
           keys = keys.sort();
         }
         let extraKeys = [];
-        if (options.respectType !== false && !isNativeFunction(object)) {
-          extraKeys = defaultPrototypesKeys;
+        if (options.respectType !== false && !isNativeFunction$1(object)) {
+          extraKeys = defaultPrototypesKeys$1;
         }
         if (options.excludeKeys) {
           keys = keys.filter((key) => {
@@ -490,7 +455,7 @@ function createHasher(options) {
       }
       const contextAdditions = /* @__PURE__ */ new Map();
       const entries = arr.map((entry) => {
-        const hasher = createHasher(options);
+        const hasher = createHasher$1(options);
         hasher.dispatch(entry);
         for (const [key, value] of hasher.getContext()) {
           contextAdditions.set(key, value);
@@ -533,7 +498,7 @@ function createHasher(options) {
     },
     function(fn) {
       write("fn:");
-      if (isNativeFunction(fn)) {
+      if (isNativeFunction$1(fn)) {
         this.dispatch("[native]");
       } else {
         this.dispatch(fn.toString());
@@ -685,13 +650,13 @@ function createHasher(options) {
     }
   };
 }
-const nativeFunc = "[native code] }";
-const nativeFuncLength = nativeFunc.length;
-function isNativeFunction(f) {
+const nativeFunc$1 = "[native code] }";
+const nativeFuncLength$1 = nativeFunc$1.length;
+function isNativeFunction$1(f) {
   if (typeof f !== "function") {
     return false;
   }
-  return Function.prototype.toString.call(f).slice(-nativeFuncLength) === nativeFunc;
+  return Function.prototype.toString.call(f).slice(-nativeFuncLength$1) === nativeFunc$1;
 }
 
 var __defProp$1 = Object.defineProperty;
@@ -991,138 +956,36 @@ function sha256base64(message) {
 }
 
 function hash(object, options = {}) {
-  const hashed = typeof object === "string" ? object : objectHash(object, options);
+  const hashed = typeof object === "string" ? object : objectHash$1(object, options);
   return sha256base64(hashed).slice(0, 10);
 }
 
-function isEqual(object1, object2, hashOptions = {}) {
-  if (object1 === object2) {
-    return true;
-  }
-  if (objectHash(object1, hashOptions) === objectHash(object2, hashOptions)) {
-    return true;
-  }
-  return false;
-}
-
-function diff(obj1, obj2, opts = {}) {
-  const h1 = _toHashedObject(obj1, opts);
-  const h2 = _toHashedObject(obj2, opts);
-  return _diff(h1, h2, opts);
-}
-function _diff(h1, h2, opts = {}) {
-  const diffs = [];
-  const allProps = /* @__PURE__ */ new Set([
-    ...Object.keys(h1.props || {}),
-    ...Object.keys(h2.props || {})
-  ]);
-  if (h1.props && h2.props) {
-    for (const prop of allProps) {
-      const p1 = h1.props[prop];
-      const p2 = h2.props[prop];
-      if (p1 && p2) {
-        diffs.push(..._diff(h1.props?.[prop], h2.props?.[prop], opts));
-      } else if (p1 || p2) {
-        diffs.push(
-          new DiffEntry((p2 || p1).key, p1 ? "removed" : "added", p2, p1)
-        );
-      }
-    }
-  }
-  if (allProps.size === 0 && h1.hash !== h2.hash) {
-    diffs.push(new DiffEntry((h2 || h1).key, "changed", h2, h1));
-  }
-  return diffs;
-}
-function _toHashedObject(obj, opts, key = "") {
-  if (obj && typeof obj !== "object") {
-    return new DiffHashedObject(key, obj, objectHash(obj, opts));
-  }
-  const props = {};
-  const hashes = [];
-  for (const _key in obj) {
-    props[_key] = _toHashedObject(
-      obj[_key],
-      opts,
-      key ? `${key}.${_key}` : _key
-    );
-    hashes.push(props[_key].hash);
-  }
-  return new DiffHashedObject(key, obj, `{${hashes.join(":")}}`, props);
-}
-class DiffEntry {
-  constructor(key, type, newValue, oldValue) {
-    this.key = key;
-    this.type = type;
-    this.newValue = newValue;
-    this.oldValue = oldValue;
-  }
-  toString() {
-    return this.toJSON();
-  }
-  toJSON() {
-    switch (this.type) {
-      case "added": {
-        return `Added   \`${this.key}\``;
-      }
-      case "removed": {
-        return `Removed \`${this.key}\``;
-      }
-      case "changed": {
-        return `Changed \`${this.key}\` from \`${this.oldValue?.toString() || "-"}\` to \`${this.newValue.toString()}\``;
-      }
-    }
-  }
-}
-class DiffHashedObject {
-  constructor(key, value, hash, props) {
-    this.key = key;
-    this.value = value;
-    this.hash = hash;
-    this.props = props;
-  }
-  toString() {
-    if (this.props) {
-      return `{${Object.keys(this.props).join(",")}}`;
-    } else {
-      return JSON.stringify(this.value);
-    }
-  }
-  toJSON() {
-    const k = this.key || ".";
-    if (this.props) {
-      return `${k}({${Object.keys(this.props).join(",")}})`;
-    }
-    return `${k}(${this.value})`;
-  }
-}
-
-const NODE_TYPES = {
+const NODE_TYPES$1 = {
   NORMAL: 0,
   WILDCARD: 1,
   PLACEHOLDER: 2
 };
 
-function createRouter$1(options = {}) {
+function createRouter$2(options = {}) {
   const ctx = {
     options,
-    rootNode: createRadixNode(),
+    rootNode: createRadixNode$1(),
     staticRoutesMap: {}
   };
   const normalizeTrailingSlash = (p) => options.strictTrailingSlash ? p : p.replace(/\/$/, "") || "/";
   if (options.routes) {
     for (const path in options.routes) {
-      insert(ctx, normalizeTrailingSlash(path), options.routes[path]);
+      insert$1(ctx, normalizeTrailingSlash(path), options.routes[path]);
     }
   }
   return {
     ctx,
-    lookup: (path) => lookup(ctx, normalizeTrailingSlash(path)),
-    insert: (path, data) => insert(ctx, normalizeTrailingSlash(path), data),
-    remove: (path) => remove(ctx, normalizeTrailingSlash(path))
+    lookup: (path) => lookup$1(ctx, normalizeTrailingSlash(path)),
+    insert: (path, data) => insert$1(ctx, normalizeTrailingSlash(path), data),
+    remove: (path) => remove$1(ctx, normalizeTrailingSlash(path))
   };
 }
-function lookup(ctx, path) {
+function lookup$1(ctx, path) {
   const staticPathNode = ctx.staticRoutesMap[path];
   if (staticPathNode) {
     return staticPathNode.data;
@@ -1174,7 +1037,7 @@ function lookup(ctx, path) {
   }
   return node.data;
 }
-function insert(ctx, path, data) {
+function insert$1(ctx, path, data) {
   let isStaticRoute = true;
   const sections = path.split("/");
   let node = ctx.rootNode;
@@ -1185,14 +1048,14 @@ function insert(ctx, path, data) {
     if (childNode = node.children.get(section)) {
       node = childNode;
     } else {
-      const type = getNodeType(section);
-      childNode = createRadixNode({ type, parent: node });
+      const type = getNodeType$1(section);
+      childNode = createRadixNode$1({ type, parent: node });
       node.children.set(section, childNode);
-      if (type === NODE_TYPES.PLACEHOLDER) {
+      if (type === NODE_TYPES$1.PLACEHOLDER) {
         childNode.paramName = section === "*" ? `_${_unnamedPlaceholderCtr++}` : section.slice(1);
         node.placeholderChildren.push(childNode);
         isStaticRoute = false;
-      } else if (type === NODE_TYPES.WILDCARD) {
+      } else if (type === NODE_TYPES$1.WILDCARD) {
         node.wildcardChildNode = childNode;
         childNode.paramName = section.slice(
           3
@@ -1213,7 +1076,7 @@ function insert(ctx, path, data) {
   }
   return node;
 }
-function remove(ctx, path) {
+function remove$1(ctx, path) {
   let success = false;
   const sections = path.split("/");
   let node = ctx.rootNode;
@@ -1235,9 +1098,9 @@ function remove(ctx, path) {
   }
   return success;
 }
-function createRadixNode(options = {}) {
+function createRadixNode$1(options = {}) {
   return {
-    type: options.type || NODE_TYPES.NORMAL,
+    type: options.type || NODE_TYPES$1.NORMAL,
     maxDepth: 0,
     parent: options.parent || null,
     children: /* @__PURE__ */ new Map(),
@@ -1247,47 +1110,47 @@ function createRadixNode(options = {}) {
     placeholderChildren: []
   };
 }
-function getNodeType(str) {
+function getNodeType$1(str) {
   if (str.startsWith("**")) {
-    return NODE_TYPES.WILDCARD;
+    return NODE_TYPES$1.WILDCARD;
   }
   if (str[0] === ":" || str === "*") {
-    return NODE_TYPES.PLACEHOLDER;
+    return NODE_TYPES$1.PLACEHOLDER;
   }
-  return NODE_TYPES.NORMAL;
+  return NODE_TYPES$1.NORMAL;
 }
 
-function toRouteMatcher(router) {
-  const table = _routerNodeToTable("", router.ctx.rootNode);
-  return _createMatcher(table, router.ctx.options.strictTrailingSlash);
+function toRouteMatcher$1(router) {
+  const table = _routerNodeToTable$1("", router.ctx.rootNode);
+  return _createMatcher$1(table, router.ctx.options.strictTrailingSlash);
 }
-function _createMatcher(table, strictTrailingSlash) {
+function _createMatcher$1(table, strictTrailingSlash) {
   return {
     ctx: { table },
-    matchAll: (path) => _matchRoutes(path, table, strictTrailingSlash)
+    matchAll: (path) => _matchRoutes$1(path, table, strictTrailingSlash)
   };
 }
-function _createRouteTable() {
+function _createRouteTable$1() {
   return {
     static: /* @__PURE__ */ new Map(),
     wildcard: /* @__PURE__ */ new Map(),
     dynamic: /* @__PURE__ */ new Map()
   };
 }
-function _matchRoutes(path, table, strictTrailingSlash) {
+function _matchRoutes$1(path, table, strictTrailingSlash) {
   if (strictTrailingSlash !== true && path.endsWith("/")) {
     path = path.slice(0, -1) || "/";
   }
   const matches = [];
-  for (const [key, value] of _sortRoutesMap(table.wildcard)) {
+  for (const [key, value] of _sortRoutesMap$1(table.wildcard)) {
     if (path === key || path.startsWith(key + "/")) {
       matches.push(value);
     }
   }
-  for (const [key, value] of _sortRoutesMap(table.dynamic)) {
+  for (const [key, value] of _sortRoutesMap$1(table.dynamic)) {
     if (path.startsWith(key + "/")) {
       const subPath = "/" + path.slice(key.length).split("/").splice(2).join("/");
-      matches.push(..._matchRoutes(subPath, value));
+      matches.push(..._matchRoutes$1(subPath, value));
     }
   }
   const staticMatch = table.static.get(path);
@@ -1296,21 +1159,21 @@ function _matchRoutes(path, table, strictTrailingSlash) {
   }
   return matches.filter(Boolean);
 }
-function _sortRoutesMap(m) {
+function _sortRoutesMap$1(m) {
   return [...m.entries()].sort((a, b) => a[0].length - b[0].length);
 }
-function _routerNodeToTable(initialPath, initialNode) {
-  const table = _createRouteTable();
+function _routerNodeToTable$1(initialPath, initialNode) {
+  const table = _createRouteTable$1();
   function _addNode(path, node) {
     if (path) {
-      if (node.type === NODE_TYPES.NORMAL && !(path.includes("*") || path.includes(":"))) {
+      if (node.type === NODE_TYPES$1.NORMAL && !(path.includes("*") || path.includes(":"))) {
         if (node.data) {
           table.static.set(path, node.data);
         }
-      } else if (node.type === NODE_TYPES.WILDCARD) {
+      } else if (node.type === NODE_TYPES$1.WILDCARD) {
         table.wildcard.set(path.replace("/**", ""), node.data);
-      } else if (node.type === NODE_TYPES.PLACEHOLDER) {
-        const subTable = _routerNodeToTable("", node);
+      } else if (node.type === NODE_TYPES$1.PLACEHOLDER) {
+        const subTable = _routerNodeToTable$1("", node);
         if (node.data) {
           subTable.static.set("/", node.data);
         }
@@ -1326,7 +1189,7 @@ function _routerNodeToTable(initialPath, initialNode) {
   return table;
 }
 
-function isPlainObject(value) {
+function isPlainObject$1(value) {
   if (value === null || typeof value !== "object") {
     return false;
   }
@@ -1343,9 +1206,9 @@ function isPlainObject(value) {
   return true;
 }
 
-function _defu(baseObject, defaults, namespace = ".", merger) {
-  if (!isPlainObject(defaults)) {
-    return _defu(baseObject, {}, namespace, merger);
+function _defu$1(baseObject, defaults, namespace = ".", merger) {
+  if (!isPlainObject$1(defaults)) {
+    return _defu$1(baseObject, {}, namespace, merger);
   }
   const object = Object.assign({}, defaults);
   for (const key in baseObject) {
@@ -1361,8 +1224,8 @@ function _defu(baseObject, defaults, namespace = ".", merger) {
     }
     if (Array.isArray(value) && Array.isArray(object[key])) {
       object[key] = [...value, ...object[key]];
-    } else if (isPlainObject(value) && isPlainObject(object[key])) {
-      object[key] = _defu(
+    } else if (isPlainObject$1(value) && isPlainObject$1(object[key])) {
+      object[key] = _defu$1(
         value,
         object[key],
         (namespace ? `${namespace}.` : "") + key.toString(),
@@ -1374,21 +1237,15 @@ function _defu(baseObject, defaults, namespace = ".", merger) {
   }
   return object;
 }
-function createDefu(merger) {
+function createDefu$1(merger) {
   return (...arguments_) => (
     // eslint-disable-next-line unicorn/no-array-reduce
-    arguments_.reduce((p, c) => _defu(p, c, "", merger), {})
+    arguments_.reduce((p, c) => _defu$1(p, c, "", merger), {})
   );
 }
-const defu = createDefu();
-const defuFn = createDefu((object, key, currentValue) => {
-  if (object[key] !== void 0 && typeof currentValue === "function") {
-    object[key] = currentValue(object[key]);
-    return true;
-  }
-});
+const defu$1 = createDefu$1();
 
-function hasProp(obj, prop) {
+function hasProp$1(obj, prop) {
   try {
     return prop in obj;
   } catch {
@@ -1396,7 +1253,7 @@ function hasProp(obj, prop) {
   }
 }
 
-class H3Error extends Error {
+let H3Error$1 = class H3Error extends Error {
   static __h3_error__ = true;
   statusCode = 500;
   fatal = false;
@@ -1413,28 +1270,28 @@ class H3Error extends Error {
   toJSON() {
     const obj = {
       message: this.message,
-      statusCode: sanitizeStatusCode(this.statusCode, 500)
+      statusCode: sanitizeStatusCode$1(this.statusCode, 500)
     };
     if (this.statusMessage) {
-      obj.statusMessage = sanitizeStatusMessage(this.statusMessage);
+      obj.statusMessage = sanitizeStatusMessage$1(this.statusMessage);
     }
     if (this.data !== undefined) {
       obj.data = this.data;
     }
     return obj;
   }
-}
-function createError$1(input) {
+};
+function createError$2(input) {
   if (typeof input === "string") {
-    return new H3Error(input);
+    return new H3Error$1(input);
   }
-  if (isError(input)) {
+  if (isError$1(input)) {
     return input;
   }
-  const err = new H3Error(input.message ?? input.statusMessage ?? "", {
+  const err = new H3Error$1(input.message ?? input.statusMessage ?? "", {
     cause: input.cause || input
   });
-  if (hasProp(input, "stack")) {
+  if (hasProp$1(input, "stack")) {
     try {
       Object.defineProperty(err, "stack", {
         get() {
@@ -1452,9 +1309,9 @@ function createError$1(input) {
     err.data = input.data;
   }
   if (input.statusCode) {
-    err.statusCode = sanitizeStatusCode(input.statusCode, err.statusCode);
+    err.statusCode = sanitizeStatusCode$1(input.statusCode, err.statusCode);
   } else if (input.status) {
-    err.statusCode = sanitizeStatusCode(input.status, err.statusCode);
+    err.statusCode = sanitizeStatusCode$1(input.status, err.statusCode);
   }
   if (input.statusMessage) {
     err.statusMessage = input.statusMessage;
@@ -1463,7 +1320,7 @@ function createError$1(input) {
   }
   if (err.statusMessage) {
     const originalMessage = err.statusMessage;
-    const sanitizedMessage = sanitizeStatusMessage(err.statusMessage);
+    const sanitizedMessage = sanitizeStatusMessage$1(err.statusMessage);
     if (sanitizedMessage !== originalMessage) {
       console.warn(
         "[h3] Please prefer using `message` for longer error messages instead of `statusMessage`. In the future, `statusMessage` will be sanitized by default."
@@ -1482,7 +1339,7 @@ function sendError(event, error, debug) {
   if (event.handled) {
     return;
   }
-  const h3Error = isError(error) ? error : createError$1(error);
+  const h3Error = isError$1(error) ? error : createError$2(error);
   const responseBody = {
     statusCode: h3Error.statusCode,
     statusMessage: h3Error.statusMessage,
@@ -1500,7 +1357,7 @@ function sendError(event, error, debug) {
   event.node.res.setHeader("content-type", MIMES.json);
   event.node.res.end(JSON.stringify(responseBody, undefined, 2));
 }
-function isError(input) {
+function isError$1(input) {
   return input?.constructor?.__h3_error__ === true;
 }
 
@@ -1519,7 +1376,7 @@ function isMethod(event, expected, allowHead) {
 }
 function assertMethod(event, expected, allowHead) {
   if (!isMethod(event, expected)) {
-    throw createError$1({
+    throw createError$2({
       statusCode: 405,
       statusMessage: "HTTP method is not allowed."
     });
@@ -1537,30 +1394,6 @@ function getRequestHeader(event, name) {
   const headers = getRequestHeaders(event);
   const value = headers[name.toLowerCase()];
   return value;
-}
-function getRequestHost(event, opts = {}) {
-  if (opts.xForwardedHost) {
-    const xForwardedHost = event.node.req.headers["x-forwarded-host"];
-    if (xForwardedHost) {
-      return xForwardedHost;
-    }
-  }
-  return event.node.req.headers.host || "localhost";
-}
-function getRequestProtocol(event, opts = {}) {
-  if (opts.xForwardedProto !== false && event.node.req.headers["x-forwarded-proto"] === "https") {
-    return "https";
-  }
-  return event.node.req.connection?.encrypted ? "https" : "http";
-}
-function getRequestURL(event, opts = {}) {
-  const host = getRequestHost(event, opts);
-  const protocol = getRequestProtocol(event, opts);
-  const path = (event.node.req.originalUrl || event.path).replace(
-    /^[/\\]+/g,
-    "/"
-  );
-  return new URL(path, `${protocol}://${host}`);
 }
 
 const RawBodySymbol = Symbol.for("h3RawBody");
@@ -1700,11 +1533,11 @@ const MIMES = {
   json: "application/json"
 };
 
-const DISALLOWED_STATUS_CHARS = /[^\u0009\u0020-\u007E]/g;
-function sanitizeStatusMessage(statusMessage = "") {
-  return statusMessage.replace(DISALLOWED_STATUS_CHARS, "");
+const DISALLOWED_STATUS_CHARS$1 = /[^\u0009\u0020-\u007E]/g;
+function sanitizeStatusMessage$1(statusMessage = "") {
+  return statusMessage.replace(DISALLOWED_STATUS_CHARS$1, "");
 }
-function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
+function sanitizeStatusCode$1(statusCode, defaultStatusCode = 200) {
   if (!statusCode) {
     return defaultStatusCode;
   }
@@ -1793,7 +1626,7 @@ function sendNoContent(event, code) {
   if (!code && event.node.res.statusCode !== 200) {
     code = event.node.res.statusCode;
   }
-  const _code = sanitizeStatusCode(code, 204);
+  const _code = sanitizeStatusCode$1(code, 204);
   if (_code === 204) {
     event.node.res.removeHeader("content-length");
   }
@@ -1802,13 +1635,13 @@ function sendNoContent(event, code) {
 }
 function setResponseStatus(event, code, text) {
   if (code) {
-    event.node.res.statusCode = sanitizeStatusCode(
+    event.node.res.statusCode = sanitizeStatusCode$1(
       code,
       event.node.res.statusCode
     );
   }
   if (text) {
-    event.node.res.statusMessage = sanitizeStatusMessage(text);
+    event.node.res.statusMessage = sanitizeStatusMessage$1(text);
   }
 }
 function getResponseStatus(event) {
@@ -1823,7 +1656,7 @@ function defaultContentType(event, type) {
   }
 }
 function sendRedirect(event, location, code = 302) {
-  event.node.res.statusCode = sanitizeStatusCode(
+  event.node.res.statusCode = sanitizeStatusCode$1(
     code,
     event.node.res.statusCode
   );
@@ -1890,7 +1723,7 @@ function sendStream(event, stream) {
     event._handled = true;
     return Promise.resolve();
   }
-  if (hasProp(stream, "pipeTo") && typeof stream.pipeTo === "function") {
+  if (hasProp$1(stream, "pipeTo") && typeof stream.pipeTo === "function") {
     return stream.pipeTo(
       new WritableStream({
         write(chunk) {
@@ -1901,7 +1734,7 @@ function sendStream(event, stream) {
       event.node.res.end();
     });
   }
-  if (hasProp(stream, "pipe") && typeof stream.pipe === "function") {
+  if (hasProp$1(stream, "pipe") && typeof stream.pipe === "function") {
     return new Promise((resolve, reject) => {
       stream.pipe(event.node.res);
       if (stream.on) {
@@ -1931,13 +1764,13 @@ function sendWebResponse(event, response) {
     }
   }
   if (response.status) {
-    event.node.res.statusCode = sanitizeStatusCode(
+    event.node.res.statusCode = sanitizeStatusCode$1(
       response.status,
       event.node.res.statusCode
     );
   }
   if (response.statusText) {
-    event.node.res.statusMessage = sanitizeStatusMessage(response.statusText);
+    event.node.res.statusMessage = sanitizeStatusMessage$1(response.statusText);
   }
   if (response.redirected) {
     event.node.res.setHeader("location", response.url);
@@ -1998,17 +1831,17 @@ async function sendProxy(event, target, opts = {}) {
       ...opts.fetchOptions
     });
   } catch (error) {
-    throw createError$1({
+    throw createError$2({
       status: 502,
       statusMessage: "Bad Gateway",
       cause: error
     });
   }
-  event.node.res.statusCode = sanitizeStatusCode(
+  event.node.res.statusCode = sanitizeStatusCode$1(
     response.status,
     event.node.res.statusCode
   );
-  event.node.res.statusMessage = sanitizeStatusMessage(response.statusText);
+  event.node.res.statusMessage = sanitizeStatusMessage$1(response.statusText);
   const cookies = [];
   for (const [key, value] of response.headers.entries()) {
     if (key === "content-encoding") {
@@ -2196,7 +2029,7 @@ class H3Event {
   }
 }
 function isEvent(input) {
-  return hasProp(input, "__is_event__");
+  return hasProp$1(input, "__is_event__");
 }
 function createEvent(req, res) {
   return new H3Event(req, res);
@@ -2255,7 +2088,7 @@ async function _callHandler(event, handler, hooks) {
 }
 const eventHandler = defineEventHandler;
 function isEventHandler(input) {
-  return hasProp(input, "__is_handler__");
+  return hasProp$1(input, "__is_handler__");
 }
 function toEventHandler(input, _, _route) {
   if (!isEventHandler(input)) {
@@ -2388,7 +2221,7 @@ function createAppEventHandler(stack, options) {
       }
     }
     if (!event.handled) {
-      throw createError$1({
+      throw createError$2({
         statusCode: 404,
         statusMessage: `Cannot find any path matching ${event.path || "/"}.`
       });
@@ -2422,7 +2255,7 @@ function createResolver(stack) {
         res = {
           ...res,
           ..._res,
-          route: joinURL(res.route || "/", _res.route || "/")
+          route: joinURL$1(res.route || "/", _res.route || "/")
         };
       }
       return res;
@@ -2440,7 +2273,7 @@ function normalizeLayer(input) {
     handler = toEventHandler(handler, undefined, input.route);
   }
   return {
-    route: withoutTrailingSlash(input.route),
+    route: withoutTrailingSlash$1(input.route),
     match: input.match,
     handler
   };
@@ -2465,7 +2298,7 @@ function handleHandlerResponse(event, val, jsonSpace) {
       });
     }
     if (val instanceof Error) {
-      throw createError$1(val);
+      throw createError$2(val);
     }
     if (typeof val.end === "function") {
       return true;
@@ -2481,7 +2314,7 @@ function handleHandlerResponse(event, val, jsonSpace) {
   if (valType === "bigint") {
     return send(event, val.toString(), MIMES.json);
   }
-  throw createError$1({
+  throw createError$2({
     statusCode: 500,
     statusMessage: `[h3] Cannot send ${valType} as response.`
   });
@@ -2500,7 +2333,7 @@ function websocketOptions(evResolver, appOptions) {
     ...appOptions.websocket,
     async resolve(info) {
       const url = info.request?.url || info.url || "/";
-      const { pathname } = typeof url === "string" ? parseURL(url) : url;
+      const { pathname } = typeof url === "string" ? parseURL$1(url) : url;
       const resolved = await evResolver(pathname);
       return resolved?.handler?.__websocket__ || {};
     }
@@ -2518,8 +2351,8 @@ const RouterMethods = [
   "trace",
   "patch"
 ];
-function createRouter(opts = {}) {
-  const _router = createRouter$1({});
+function createRouter$1(opts = {}) {
+  const _router = createRouter$2({});
   const routes = {};
   let _matcher;
   const router = {};
@@ -2550,7 +2383,7 @@ function createRouter(opts = {}) {
     const matched = _router.lookup(path);
     if (!matched || !matched.handlers) {
       return {
-        error: createError$1({
+        error: createError$2({
           statusCode: 404,
           name: "Not Found",
           statusMessage: `Cannot find any route matching ${path || "/"}.`
@@ -2560,7 +2393,7 @@ function createRouter(opts = {}) {
     let handler = matched.handlers[method] || matched.handlers.all;
     if (!handler) {
       if (!_matcher) {
-        _matcher = toRouteMatcher(_router);
+        _matcher = toRouteMatcher$1(_router);
       }
       const _matches = _matcher.matchAll(path).reverse();
       for (const _match of _matches) {
@@ -2578,7 +2411,7 @@ function createRouter(opts = {}) {
     }
     if (!handler) {
       return {
-        error: createError$1({
+        error: createError$2({
           statusCode: 405,
           name: "Method Not Allowed",
           statusMessage: `Method ${method} is not allowed on this route.`
@@ -2637,8 +2470,8 @@ function toNodeListener(app) {
     try {
       await app.handler(event);
     } catch (_error) {
-      const error = createError$1(_error);
-      if (!isError(_error)) {
+      const error = createError$2(_error);
+      if (!isError$1(_error)) {
         error.unhandled = true;
       }
       setResponseStatus(event, error.statusCode, error.statusMessage);
@@ -3077,10 +2910,10 @@ function createFetch$1(globalOptions = {}) {
     }
     if (typeof context.request === "string") {
       if (context.options.baseURL) {
-        context.request = withBase(context.request, context.options.baseURL);
+        context.request = withBase$1(context.request, context.options.baseURL);
       }
       if (context.options.query) {
-        context.request = withQuery(context.request, context.options.query);
+        context.request = withQuery$1(context.request, context.options.query);
         delete context.options.query;
       }
       if ("query" in context.options) {
@@ -3151,7 +2984,7 @@ function createFetch$1(globalOptions = {}) {
       switch (responseType) {
         case "json": {
           const data = await context.response.text();
-          const parseFunction = context.options.parseResponse || destr;
+          const parseFunction = context.options.parseResponse || destr$1;
           context.response._data = parseFunction(data);
           break;
         }
@@ -3219,8 +3052,7 @@ function createNodeFetch() {
 const fetch$1 = globalThis.fetch ? (...args) => globalThis.fetch(...args) : createNodeFetch();
 const Headers$1 = globalThis.Headers || s;
 const AbortController = globalThis.AbortController || i;
-const ofetch = createFetch$1({ fetch: fetch$1, Headers: Headers$1, AbortController });
-const $fetch$1 = ofetch;
+createFetch$1({ fetch: fetch$1, Headers: Headers$1, AbortController });
 
 function rawHeaders(headers) {
   const rawHeaders2 = [];
@@ -4031,7 +3863,7 @@ const errorHandler = (async function errorhandler(error, event) {
   const reqHeaders = getRequestHeaders(event);
   const isRenderingError = event.path.startsWith("/__nuxt_error") || !!reqHeaders["x-nuxt-error"];
   const res = isRenderingError ? null : await useNitroApp().localFetch(
-    withQuery(joinURL(useRuntimeConfig(event).app.baseURL, "/__nuxt_error"), errorObject),
+    withQuery$1(joinURL$1(useRuntimeConfig(event).app.baseURL, "/__nuxt_error"), errorObject),
     {
       headers: { ...reqHeaders, "x-nuxt-error": "true" },
       redirect: "manual"
@@ -4058,121 +3890,114 @@ const errorHandler = (async function errorhandler(error, event) {
 
 const script = "\"use strict\";(()=>{const t=window,e=document.documentElement,c=[\"dark\",\"light\"],n=getStorageValue(\"localStorage\",\"nuxt-color-mode\")||\"system\";let i=n===\"system\"?u():n;const r=e.getAttribute(\"data-color-mode-forced\");r&&(i=r),l(i),t[\"__NUXT_COLOR_MODE__\"]={preference:n,value:i,getColorScheme:u,addColorScheme:l,removeColorScheme:d};function l(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.add(s):e.className+=\" \"+s,a&&e.setAttribute(\"data-\"+a,o)}function d(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.remove(s):e.className=e.className.replace(new RegExp(s,\"g\"),\"\"),a&&e.removeAttribute(\"data-\"+a)}function f(o){return t.matchMedia(\"(prefers-color-scheme\"+o+\")\")}function u(){if(t.matchMedia&&f(\"\").media!==\"not all\"){for(const o of c)if(f(\":\"+o).matches)return o}return\"light\"}})();function getStorageValue(t,e){switch(t){case\"localStorage\":return window.localStorage.getItem(e);case\"sessionStorage\":return window.sessionStorage.getItem(e);case\"cookie\":return getCookie(e);default:return null}}function getCookie(t){const c=(\"; \"+window.document.cookie).split(\"; \"+t+\"=\");if(c.length===2)return c.pop()?.split(\";\").shift()}";
 
-const _84KgafxNRp = (function(nitro) {
+const _qWC6CQn8ha = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
 const plugins = [
-  _84KgafxNRp
+  _qWC6CQn8ha
 ];
 
 const assets$1 = {
   "/favicon.ico": {
     "type": "image/vnd.microsoft.icon",
     "etag": "\"10be-n8egyE9tcb7sKGr/pYCaQ4uWqxI\"",
-    "mtime": "2025-01-29T16:39:41.000Z",
+    "mtime": "2025-03-20T14:39:27.674Z",
     "size": 4286,
     "path": "../public/favicon.ico"
   },
   "/robots.txt": {
     "type": "text/plain; charset=utf-8",
-    "etag": "\"1-rcg7GeeTSRscbqD9i0bNnzLlkvw\"",
-    "mtime": "2025-01-29T16:39:41.000Z",
-    "size": 1,
+    "etag": "\"2-uoq1oCgLlTqpdDX/iUbLy7J1Wic\"",
+    "mtime": "2025-03-20T14:39:27.675Z",
+    "size": 2,
     "path": "../public/robots.txt"
   },
-  "/_nuxt/BPvxhgAf.js": {
+  "/_nuxt/BfNSAbNA.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"ea4-ELUujII4kR8p58xUe0X80c47RTs\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 3748,
-    "path": "../public/_nuxt/BPvxhgAf.js"
-  },
-  "/_nuxt/BrXdMyrG.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"d3c-J1oeBRTj1aurWaPgtFUnh1A0NIs\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 3388,
-    "path": "../public/_nuxt/BrXdMyrG.js"
-  },
-  "/_nuxt/BSuNFR3G.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"b5-3gbarKT2jQgY5GcTZzpTxDN4ZQk\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 181,
-    "path": "../public/_nuxt/BSuNFR3G.js"
-  },
-  "/_nuxt/BUOUPbb2.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1e23-cWXpfThZsCIZ1VB8iqgAY0Ml7K8\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 7715,
-    "path": "../public/_nuxt/BUOUPbb2.js"
-  },
-  "/_nuxt/Cr_P5und.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"4f772-gPnVgRb31JZkJDXBU6UzUf8Kf20\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 325490,
-    "path": "../public/_nuxt/Cr_P5und.js"
-  },
-  "/_nuxt/D9rH8Fb-.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1666-MQJNBEqSPldzvhjEVVdzjY7M2Gc\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
+    "etag": "\"1666-TGRfo7I5USQ2iRbNdJm4o2Q6L8s\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
     "size": 5734,
-    "path": "../public/_nuxt/D9rH8Fb-.js"
+    "path": "../public/_nuxt/BfNSAbNA.js"
   },
-  "/_nuxt/error-404.C3V-3Mc4.css": {
-    "type": "text/css; charset=utf-8",
-    "etag": "\"de4-tk05rgubWwonEl8hX4lgLuosKN0\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 3556,
-    "path": "../public/_nuxt/error-404.C3V-3Mc4.css"
-  },
-  "/_nuxt/error-500.dGVH929u.css": {
-    "type": "text/css; charset=utf-8",
-    "etag": "\"75c-KF6NWZfD3QI/4EI5b2MfK1uNuAg\"",
-    "mtime": "2025-03-19T13:06:20.724Z",
-    "size": 1884,
-    "path": "../public/_nuxt/error-500.dGVH929u.css"
-  },
-  "/_nuxt/index.CCNDtNMZ.css": {
-    "type": "text/css; charset=utf-8",
-    "etag": "\"6943-yqwoRsZkgegg7H+M6vLROwd4a7E\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 26947,
-    "path": "../public/_nuxt/index.CCNDtNMZ.css"
-  },
-  "/_nuxt/n0mZHn_k.js": {
+  "/_nuxt/BMy8MLg6.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"37e3f-yYmfzPa5v7kWT/NEAwesdK6PRuE\"",
-    "mtime": "2025-03-19T13:06:20.726Z",
-    "size": 228927,
-    "path": "../public/_nuxt/n0mZHn_k.js"
+    "etag": "\"398fd-P9qbxLxCjYU9nz4g83b+cFqTQls\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
+    "size": 235773,
+    "path": "../public/_nuxt/BMy8MLg6.js"
+  },
+  "/_nuxt/BpFOicE8.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"ea4-sgDNR+IyGIwC1Xb/ib1fMzAOMOI\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
+    "size": 3748,
+    "path": "../public/_nuxt/BpFOicE8.js"
+  },
+  "/_nuxt/DdzIDtOq.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1e23-OtQmtAmZh3rjLkL8nbxJIXh0B0o\"",
+    "mtime": "2025-03-20T15:32:59.861Z",
+    "size": 7715,
+    "path": "../public/_nuxt/DdzIDtOq.js"
+  },
+  "/_nuxt/DLxAfWLm.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"b5-O/n9hO6cyg0p1R52apCVxL9UgFM\"",
+    "mtime": "2025-03-20T15:32:59.861Z",
+    "size": 181,
+    "path": "../public/_nuxt/DLxAfWLm.js"
+  },
+  "/_nuxt/DQXFtWXt.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"d3c-ZzQAd4X0f7rYnmOdt+benOo3sLM\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
+    "size": 3388,
+    "path": "../public/_nuxt/DQXFtWXt.js"
+  },
+  "/_nuxt/error-404.BJkSn6RI.css": {
+    "type": "text/css; charset=utf-8",
+    "etag": "\"de4-r9xtDsKTiqf+9Q1gboMnptHSjqc\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
+    "size": 3556,
+    "path": "../public/_nuxt/error-404.BJkSn6RI.css"
+  },
+  "/_nuxt/error-500.TOCKLquH.css": {
+    "type": "text/css; charset=utf-8",
+    "etag": "\"75c-UgDuztSkituCmi5v2gpTJ/CXJTw\"",
+    "mtime": "2025-03-20T15:32:59.860Z",
+    "size": 1884,
+    "path": "../public/_nuxt/error-500.TOCKLquH.css"
+  },
+  "/_nuxt/index.BOlJ0YUd.css": {
+    "type": "text/css; charset=utf-8",
+    "etag": "\"6943-YBEUzTpzPWIsasnE58BH0w7pDgw\"",
+    "mtime": "2025-03-20T15:32:59.841Z",
+    "size": 26947,
+    "path": "../public/_nuxt/index.BOlJ0YUd.css"
+  },
+  "/_nuxt/ngbixXaS.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"54316-Io+k+Lkmv5p+tfScjfCM3o2vIf0\"",
+    "mtime": "2025-03-20T15:32:59.861Z",
+    "size": 344854,
+    "path": "../public/_nuxt/ngbixXaS.js"
   },
   "/_nuxt/builds/latest.json": {
     "type": "application/json",
-    "etag": "\"47-RToLd4KjDEmcI6E+QneRC7Zz8Pk\"",
-    "mtime": "2025-03-19T13:06:28.355Z",
+    "etag": "\"47-u8LwHYHW2dajYZmGrmyVNGVUbRE\"",
+    "mtime": "2025-03-20T15:33:07.023Z",
     "size": 71,
     "path": "../public/_nuxt/builds/latest.json"
   },
-  "/_nuxt/builds/meta/dev.json": {
+  "/_nuxt/builds/meta/6c2c9d29-5250-47fe-b0e8-81126a980357.json": {
     "type": "application/json",
-    "etag": "\"6a-XB2hILwJYBfZHVmhPJxKeT7NppQ\"",
-    "mtime": "2025-03-19T13:06:21.027Z",
-    "size": 106,
-    "path": "../public/_nuxt/builds/meta/dev.json"
-  },
-  "/_nuxt/builds/meta/ebd99220-72e7-4cda-9bf4-e7cedc0fcb6d.json": {
-    "type": "application/json",
-    "etag": "\"8b-yGHCMtg7MkFEypjHhoCoqkUt+Hc\"",
-    "mtime": "2025-03-19T13:06:28.356Z",
+    "etag": "\"8b-TVR58Vv6fRX3mHI6w21ibkUrDfw\"",
+    "mtime": "2025-03-20T15:33:07.024Z",
     "size": 139,
-    "path": "../public/_nuxt/builds/meta/ebd99220-72e7-4cda-9bf4-e7cedc0fcb6d.json"
+    "path": "../public/_nuxt/builds/meta/6c2c9d29-5250-47fe-b0e8-81126a980357.json"
   }
 };
 
@@ -4302,12 +4127,12 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _Yxpgdd = eventHandler((event) => {
+const _uO7pOV = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
   let id = decodePath(
-    withLeadingSlash(withoutTrailingSlash(parseURL(event.path).pathname))
+    withLeadingSlash(withoutTrailingSlash$1(parseURL$1(event.path).pathname))
   );
   let asset;
   const encodingHeader = String(
@@ -4321,7 +4146,7 @@ const _Yxpgdd = eventHandler((event) => {
     appendResponseHeader(event, "Vary", "Accept-Encoding");
   }
   for (const encoding of encodings) {
-    for (const _id of [id + encoding, joinURL(id, "index.html" + encoding)]) {
+    for (const _id of [id + encoding, joinURL$1(id, "index.html" + encoding)]) {
       const _asset = getAsset(_id);
       if (_asset) {
         asset = _asset;
@@ -4333,7 +4158,7 @@ const _Yxpgdd = eventHandler((event) => {
   if (!asset) {
     if (isPublicAssetURL(id)) {
       removeResponseHeader(event, "Cache-Control");
-      throw createError$1({
+      throw createError$2({
         statusMessage: "Cannot find static asset " + id,
         statusCode: 404
       });
@@ -4476,6 +4301,68 @@ function klona(x) {
 
 	return x;
 }
+
+function isPlainObject(value) {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== null && prototype !== Object.prototype && Object.getPrototypeOf(prototype) !== null) {
+    return false;
+  }
+  if (Symbol.iterator in value) {
+    return false;
+  }
+  if (Symbol.toStringTag in value) {
+    return Object.prototype.toString.call(value) === "[object Module]";
+  }
+  return true;
+}
+
+function _defu(baseObject, defaults, namespace = ".", merger) {
+  if (!isPlainObject(defaults)) {
+    return _defu(baseObject, {}, namespace, merger);
+  }
+  const object = Object.assign({}, defaults);
+  for (const key in baseObject) {
+    if (key === "__proto__" || key === "constructor") {
+      continue;
+    }
+    const value = baseObject[key];
+    if (value === null || value === void 0) {
+      continue;
+    }
+    if (merger && merger(object, key, value, namespace)) {
+      continue;
+    }
+    if (Array.isArray(value) && Array.isArray(object[key])) {
+      object[key] = [...value, ...object[key]];
+    } else if (isPlainObject(value) && isPlainObject(object[key])) {
+      object[key] = _defu(
+        value,
+        object[key],
+        (namespace ? `${namespace}.` : "") + key.toString(),
+        merger
+      );
+    } else {
+      object[key] = value;
+    }
+  }
+  return object;
+}
+function createDefu(merger) {
+  return (...arguments_) => (
+    // eslint-disable-next-line unicorn/no-array-reduce
+    arguments_.reduce((p, c) => _defu(p, c, "", merger), {})
+  );
+}
+const defu = createDefu();
+const defuFn = createDefu((object, key, currentValue) => {
+  if (object[key] !== void 0 && typeof currentValue === "function") {
+    object[key] = currentValue(object[key]);
+    return true;
+  }
+});
 
 const defineAppConfig = (config) => config;
 
@@ -4806,9 +4693,6 @@ function splitByCase(str, separators) {
   parts.push(buff);
   return parts;
 }
-function upperFirst(str) {
-  return str ? str[0].toUpperCase() + str.slice(1) : "";
-}
 function kebabCase(str, joiner) {
   return str ? (Array.isArray(str) ? str : splitByCase(str)).map((p) => p.toLowerCase()).join(joiner) : "";
 }
@@ -4818,7 +4702,7 @@ function snakeCase(str) {
 
 function getEnv(key, opts) {
   const envKey = snakeCase(key).toUpperCase();
-  return destr(
+  return destr$1(
     process.env[opts.prefix + envKey] ?? process.env[opts.altPrefix + envKey]
   );
 }
@@ -4857,7 +4741,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "ebd99220-72e7-4cda-9bf4-e7cedc0fcb6d",
+    "buildId": "6c2c9d29-5250-47fe-b0e8-81126a980357",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4941,6 +4825,117 @@ new Proxy(/* @__PURE__ */ Object.create(null), {
   }
 });
 
+const storageKeyProperties = [
+  "hasItem",
+  "getItem",
+  "getItemRaw",
+  "setItem",
+  "setItemRaw",
+  "removeItem",
+  "getMeta",
+  "setMeta",
+  "removeMeta",
+  "getKeys",
+  "clear",
+  "mount",
+  "unmount"
+];
+function prefixStorage(storage, base) {
+  base = normalizeBaseKey$1(base);
+  if (!base) {
+    return storage;
+  }
+  const nsStorage = { ...storage };
+  for (const property of storageKeyProperties) {
+    nsStorage[property] = (key = "", ...args) => (
+      // @ts-ignore
+      storage[property](base + key, ...args)
+    );
+  }
+  nsStorage.getKeys = (key = "", ...arguments_) => storage.getKeys(base + key, ...arguments_).then((keys) => keys.map((key2) => key2.slice(base.length)));
+  return nsStorage;
+}
+function normalizeKey$2(key) {
+  if (!key) {
+    return "";
+  }
+  return key.split("?")[0]?.replace(/[/\\]/g, ":").replace(/:+/g, ":").replace(/^:|:$/g, "") || "";
+}
+function normalizeBaseKey$1(base) {
+  base = normalizeKey$2(base);
+  return base ? base + ":" : "";
+}
+
+const suspectProtoRx = /"(?:_|\\u0{2}5[Ff]){2}(?:p|\\u0{2}70)(?:r|\\u0{2}72)(?:o|\\u0{2}6[Ff])(?:t|\\u0{2}74)(?:o|\\u0{2}6[Ff])(?:_|\\u0{2}5[Ff]){2}"\s*:/;
+const suspectConstructorRx = /"(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|\\u0073)(?:t|\\u0074)(?:r|\\u0072)(?:u|\\u0075)(?:c|\\u0063)(?:t|\\u0074)(?:o|\\u006[Ff])(?:r|\\u0072)"\s*:/;
+const JsonSigRx = /^\s*["[{]|^\s*-?\d{1,16}(\.\d{1,17})?([Ee][+-]?\d+)?\s*$/;
+function jsonParseTransform(key, value) {
+  if (key === "__proto__" || key === "constructor" && value && typeof value === "object" && "prototype" in value) {
+    warnKeyDropped(key);
+    return;
+  }
+  return value;
+}
+function warnKeyDropped(key) {
+  console.warn(`[destr] Dropping "${key}" key to prevent prototype pollution.`);
+}
+function destr(value, options = {}) {
+  if (typeof value !== "string") {
+    return value;
+  }
+  const _value = value.trim();
+  if (
+    // eslint-disable-next-line unicorn/prefer-at
+    value[0] === '"' && value.endsWith('"') && !value.includes("\\")
+  ) {
+    return _value.slice(1, -1);
+  }
+  if (_value.length <= 9) {
+    const _lval = _value.toLowerCase();
+    if (_lval === "true") {
+      return true;
+    }
+    if (_lval === "false") {
+      return false;
+    }
+    if (_lval === "undefined") {
+      return void 0;
+    }
+    if (_lval === "null") {
+      return null;
+    }
+    if (_lval === "nan") {
+      return Number.NaN;
+    }
+    if (_lval === "infinity") {
+      return Number.POSITIVE_INFINITY;
+    }
+    if (_lval === "-infinity") {
+      return Number.NEGATIVE_INFINITY;
+    }
+  }
+  if (!JsonSigRx.test(value)) {
+    if (options.strict) {
+      throw new SyntaxError("[destr] Invalid JSON");
+    }
+    return value;
+  }
+  try {
+    if (suspectProtoRx.test(value) || suspectConstructorRx.test(value)) {
+      if (options.strict) {
+        throw new Error("[destr] Possible prototype pollution");
+      }
+      return JSON.parse(value, jsonParseTransform);
+    }
+    return JSON.parse(value);
+  } catch (error) {
+    if (options.strict) {
+      throw error;
+    }
+    return value;
+  }
+}
+
 function wrapToPromise(value) {
   if (!value || typeof value.then !== "function") {
     return Promise.resolve(value);
@@ -5004,37 +4999,6 @@ function base64Encode(input) {
     return Buffer.from(input).toString("base64");
   }
   return globalThis.btoa(String.fromCodePoint(...input));
-}
-
-const storageKeyProperties = [
-  "hasItem",
-  "getItem",
-  "getItemRaw",
-  "setItem",
-  "setItemRaw",
-  "removeItem",
-  "getMeta",
-  "setMeta",
-  "removeMeta",
-  "getKeys",
-  "clear",
-  "mount",
-  "unmount"
-];
-function prefixStorage(storage, base) {
-  base = normalizeBaseKey(base);
-  if (!base) {
-    return storage;
-  }
-  const nsStorage = { ...storage };
-  for (const property of storageKeyProperties) {
-    nsStorage[property] = (key = "", ...args) => (
-      // @ts-ignore
-      storage[property](base + key, ...args)
-    );
-  }
-  nsStorage.getKeys = (key = "", ...arguments_) => storage.getKeys(base + key, ...arguments_).then((keys) => keys.map((key2) => key2.slice(base.length)));
-  return nsStorage;
 }
 function normalizeKey$1(key) {
   if (!key) {
@@ -5518,21 +5482,21 @@ const assets = {
 function defineDriver(factory) {
   return factory;
 }
-function createError(driver, message, opts) {
+function createError$1(driver, message, opts) {
   const err = new Error(`[unstorage] [${driver}] ${message}`, opts);
   if (Error.captureStackTrace) {
-    Error.captureStackTrace(err, createError);
+    Error.captureStackTrace(err, createError$1);
   }
   return err;
 }
 function createRequiredError(driver, name) {
   if (Array.isArray(name)) {
-    return createError(
+    return createError$1(
       driver,
       `Missing some of the required options ${name.map((n) => "`" + n + "`").join(", ")}`
     );
   }
-  return createError(driver, `Missing required option \`${name}\`.`);
+  return createError$1(driver, `Missing required option \`${name}\`.`);
 }
 
 function ignoreNotfound(err) {
@@ -5605,7 +5569,7 @@ const unstorage_47drivers_47fs_45lite = defineDriver((opts = {}) => {
   opts.base = resolve$1(opts.base);
   const r = (key) => {
     if (PATH_TRAVERSE_RE.test(key)) {
-      throw createError(
+      throw createError$1(
         DRIVER_NAME,
         `Invalid key: ${JSON.stringify(key)}. It should not contain .. segments`
       );
@@ -5663,7 +5627,7 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets);
 
-storage.mount('data', unstorage_47drivers_47fs_45lite({"driver":"fsLite","base":"C:\\Users\\dancodeur\\Desktop\\2025\\test_redirection\\redirect_url\\.data\\kv"}));
+storage.mount('data', unstorage_47drivers_47fs_45lite({"driver":"fsLite","base":"C:\\Users\\eleng\\Desktop\\MyProjet\\Test__monogotoAPI\\Test__monogotoAPI\\.data\\kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -5795,7 +5759,7 @@ function defineCachedEventHandler(handler, opts = defaultCacheOptions()) {
       const _path = event.node.req.originalUrl || event.node.req.url || event.path;
       let _pathname;
       try {
-        _pathname = escapeKey(decodeURI(parseURL(_path).pathname)).slice(0, 16) || "index";
+        _pathname = escapeKey(decodeURI(parseURL$1(_path).pathname)).slice(0, 16) || "index";
       } catch {
         _pathname = "-";
       }
@@ -6043,8 +6007,8 @@ function defineRenderHandler(render) {
 }
 
 const config = useRuntimeConfig();
-const _routeRulesMatcher = toRouteMatcher(
-  createRouter$1({ routes: config.nitro.routeRules })
+const _routeRulesMatcher = toRouteMatcher$1(
+  createRouter$2({ routes: config.nitro.routeRules })
 );
 function createRouteRulesHandler(ctx) {
   return eventHandler((event) => {
@@ -6060,10 +6024,10 @@ function createRouteRulesHandler(ctx) {
         if (strpBase) {
           targetPath = withoutBase(targetPath, strpBase);
         }
-        target = joinURL(target.slice(0, -3), targetPath);
+        target = joinURL$1(target.slice(0, -3), targetPath);
       } else if (event.path.includes("?")) {
         const query = getQuery$1(event.path);
-        target = withQuery(target, query);
+        target = withQuery$1(target, query);
       }
       return sendRedirect(event, target, routeRules.redirect.statusCode);
     }
@@ -6075,10 +6039,10 @@ function createRouteRulesHandler(ctx) {
         if (strpBase) {
           targetPath = withoutBase(targetPath, strpBase);
         }
-        target = joinURL(target.slice(0, -3), targetPath);
+        target = joinURL$1(target.slice(0, -3), targetPath);
       } else if (event.path.includes("?")) {
         const query = getQuery$1(event.path);
-        target = withQuery(target, query);
+        target = withQuery$1(target, query);
       }
       return proxyRequest(event, target, {
         fetch: ctx.localFetch,
@@ -6097,104 +6061,1025 @@ function getRouteRules(event) {
   return event.context._nitro.routeRules;
 }
 function getRouteRulesForPath(path) {
-  return defu({}, ..._routeRulesMatcher.matchAll(path).reverse());
+  return defu$1({}, ..._routeRulesMatcher.matchAll(path).reverse());
 }
 
-function createContext(opts = {}) {
-  let currentInstance;
-  let isSingleton = false;
-  const checkConflict = (instance) => {
-    if (currentInstance && currentInstance !== instance) {
-      throw new Error("Context conflict");
+const HASH_RE = /#/g;
+const AMPERSAND_RE = /&/g;
+const SLASH_RE = /\//g;
+const EQUAL_RE = /=/g;
+const PLUS_RE = /\+/g;
+const ENC_CARET_RE = /%5e/gi;
+const ENC_BACKTICK_RE = /%60/gi;
+const ENC_PIPE_RE = /%7c/gi;
+const ENC_SPACE_RE = /%20/gi;
+function encode(text) {
+  return encodeURI("" + text).replace(ENC_PIPE_RE, "|");
+}
+function encodeQueryValue(input) {
+  return encode(typeof input === "string" ? input : JSON.stringify(input)).replace(PLUS_RE, "%2B").replace(ENC_SPACE_RE, "+").replace(HASH_RE, "%23").replace(AMPERSAND_RE, "%26").replace(ENC_BACKTICK_RE, "`").replace(ENC_CARET_RE, "^").replace(SLASH_RE, "%2F");
+}
+function encodeQueryKey(text) {
+  return encodeQueryValue(text).replace(EQUAL_RE, "%3D");
+}
+function decode(text = "") {
+  try {
+    return decodeURIComponent("" + text);
+  } catch {
+    return "" + text;
+  }
+}
+function decodeQueryKey(text) {
+  return decode(text.replace(PLUS_RE, " "));
+}
+function decodeQueryValue(text) {
+  return decode(text.replace(PLUS_RE, " "));
+}
+
+function parseQuery(parametersString = "") {
+  const object = {};
+  if (parametersString[0] === "?") {
+    parametersString = parametersString.slice(1);
+  }
+  for (const parameter of parametersString.split("&")) {
+    const s = parameter.match(/([^=]+)=?(.*)/) || [];
+    if (s.length < 2) {
+      continue;
     }
-  };
-  let als;
-  if (opts.asyncContext) {
-    const _AsyncLocalStorage = opts.AsyncLocalStorage || globalThis.AsyncLocalStorage;
-    if (_AsyncLocalStorage) {
-      als = new _AsyncLocalStorage();
+    const key = decodeQueryKey(s[1]);
+    if (key === "__proto__" || key === "constructor") {
+      continue;
+    }
+    const value = decodeQueryValue(s[2] || "");
+    if (object[key] === void 0) {
+      object[key] = value;
+    } else if (Array.isArray(object[key])) {
+      object[key].push(value);
     } else {
-      console.warn("[unctx] `AsyncLocalStorage` is not provided.");
+      object[key] = [object[key], value];
     }
   }
-  const _getCurrentInstance = () => {
-    if (als) {
-      const instance = als.getStore();
-      if (instance !== void 0) {
-        return instance;
-      }
+  return object;
+}
+function encodeQueryItem(key, value) {
+  if (typeof value === "number" || typeof value === "boolean") {
+    value = String(value);
+  }
+  if (!value) {
+    return encodeQueryKey(key);
+  }
+  if (Array.isArray(value)) {
+    return value.map((_value) => `${encodeQueryKey(key)}=${encodeQueryValue(_value)}`).join("&");
+  }
+  return `${encodeQueryKey(key)}=${encodeQueryValue(value)}`;
+}
+function stringifyQuery(query) {
+  return Object.keys(query).filter((k) => query[k] !== void 0).map((k) => encodeQueryItem(k, query[k])).filter(Boolean).join("&");
+}
+
+const PROTOCOL_STRICT_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{1,2})/;
+const PROTOCOL_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{2})?/;
+const PROTOCOL_RELATIVE_REGEX = /^([/\\]\s*){2,}[^/\\]/;
+const PROTOCOL_SCRIPT_RE = /^[\s\0]*(blob|data|javascript|vbscript):$/i;
+const TRAILING_SLASH_RE = /\/$|\/\?|\/#/;
+const JOIN_LEADING_SLASH_RE = /^\.?\//;
+function hasProtocol(inputString, opts = {}) {
+  if (typeof opts === "boolean") {
+    opts = { acceptRelative: opts };
+  }
+  if (opts.strict) {
+    return PROTOCOL_STRICT_REGEX.test(inputString);
+  }
+  return PROTOCOL_REGEX.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX.test(inputString) : false);
+}
+function isScriptProtocol(protocol) {
+  return !!protocol && PROTOCOL_SCRIPT_RE.test(protocol);
+}
+function hasTrailingSlash(input = "", respectQueryAndFragment) {
+  if (!respectQueryAndFragment) {
+    return input.endsWith("/");
+  }
+  return TRAILING_SLASH_RE.test(input);
+}
+function withoutTrailingSlash(input = "", respectQueryAndFragment) {
+  if (!respectQueryAndFragment) {
+    return (hasTrailingSlash(input) ? input.slice(0, -1) : input) || "/";
+  }
+  if (!hasTrailingSlash(input, true)) {
+    return input || "/";
+  }
+  let path = input;
+  let fragment = "";
+  const fragmentIndex = input.indexOf("#");
+  if (fragmentIndex >= 0) {
+    path = input.slice(0, fragmentIndex);
+    fragment = input.slice(fragmentIndex);
+  }
+  const [s0, ...s] = path.split("?");
+  const cleanPath = s0.endsWith("/") ? s0.slice(0, -1) : s0;
+  return (cleanPath || "/") + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
+}
+function withTrailingSlash(input = "", respectQueryAndFragment) {
+  if (!respectQueryAndFragment) {
+    return input.endsWith("/") ? input : input + "/";
+  }
+  if (hasTrailingSlash(input, true)) {
+    return input || "/";
+  }
+  let path = input;
+  let fragment = "";
+  const fragmentIndex = input.indexOf("#");
+  if (fragmentIndex >= 0) {
+    path = input.slice(0, fragmentIndex);
+    fragment = input.slice(fragmentIndex);
+    if (!path) {
+      return fragment;
     }
-    return currentInstance;
+  }
+  const [s0, ...s] = path.split("?");
+  return s0 + "/" + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
+}
+function withBase(input, base) {
+  if (isEmptyURL(base) || hasProtocol(input)) {
+    return input;
+  }
+  const _base = withoutTrailingSlash(base);
+  if (input.startsWith(_base)) {
+    return input;
+  }
+  return joinURL(_base, input);
+}
+function withQuery(input, query) {
+  const parsed = parseURL(input);
+  const mergedQuery = { ...parseQuery(parsed.search), ...query };
+  parsed.search = stringifyQuery(mergedQuery);
+  return stringifyParsedURL(parsed);
+}
+function isEmptyURL(url) {
+  return !url || url === "/";
+}
+function isNonEmptyURL(url) {
+  return url && url !== "/";
+}
+function joinURL(base, ...input) {
+  let url = base || "";
+  for (const segment of input.filter((url2) => isNonEmptyURL(url2))) {
+    if (url) {
+      const _segment = segment.replace(JOIN_LEADING_SLASH_RE, "");
+      url = withTrailingSlash(url) + _segment;
+    } else {
+      url = segment;
+    }
+  }
+  return url;
+}
+
+const protocolRelative = Symbol.for("ufo:protocolRelative");
+function parseURL(input = "", defaultProto) {
+  const _specialProtoMatch = input.match(
+    /^[\s\0]*(blob:|data:|javascript:|vbscript:)(.*)/i
+  );
+  if (_specialProtoMatch) {
+    const [, _proto, _pathname = ""] = _specialProtoMatch;
+    return {
+      protocol: _proto.toLowerCase(),
+      pathname: _pathname,
+      href: _proto + _pathname,
+      auth: "",
+      host: "",
+      search: "",
+      hash: ""
+    };
+  }
+  if (!hasProtocol(input, { acceptRelative: true })) {
+    return parsePath(input);
+  }
+  const [, protocol = "", auth, hostAndPath = ""] = input.replace(/\\/g, "/").match(/^[\s\0]*([\w+.-]{2,}:)?\/\/([^/@]+@)?(.*)/) || [];
+  let [, host = "", path = ""] = hostAndPath.match(/([^#/?]*)(.*)?/) || [];
+  if (protocol === "file:") {
+    path = path.replace(/\/(?=[A-Za-z]:)/, "");
+  }
+  const { pathname, search, hash } = parsePath(path);
+  return {
+    protocol: protocol.toLowerCase(),
+    auth: auth ? auth.slice(0, Math.max(0, auth.length - 1)) : "",
+    host,
+    pathname,
+    search,
+    hash,
+    [protocolRelative]: !protocol
+  };
+}
+function parsePath(input = "") {
+  const [pathname = "", search = "", hash = ""] = (input.match(/([^#?]*)(\?[^#]*)?(#.*)?/) || []).splice(1);
+  return {
+    pathname,
+    search,
+    hash
+  };
+}
+function stringifyParsedURL(parsed) {
+  const pathname = parsed.pathname || "";
+  const search = parsed.search ? (parsed.search.startsWith("?") ? "" : "?") + parsed.search : "";
+  const hash = parsed.hash || "";
+  const auth = parsed.auth ? parsed.auth + "@" : "";
+  const host = parsed.host || "";
+  const proto = parsed.protocol || parsed[protocolRelative] ? (parsed.protocol || "") + "//" : "";
+  return proto + auth + host + pathname + search + hash;
+}
+
+const defaults = Object.freeze({
+  ignoreUnknown: false,
+  respectType: false,
+  respectFunctionNames: false,
+  respectFunctionProperties: false,
+  unorderedObjects: true,
+  unorderedArrays: false,
+  unorderedSets: false,
+  excludeKeys: void 0,
+  excludeValues: void 0,
+  replacer: void 0
+});
+function objectHash(object, options) {
+  if (options) {
+    options = { ...defaults, ...options };
+  } else {
+    options = defaults;
+  }
+  const hasher = createHasher(options);
+  hasher.dispatch(object);
+  return hasher.toString();
+}
+const defaultPrototypesKeys = Object.freeze([
+  "prototype",
+  "__proto__",
+  "constructor"
+]);
+function createHasher(options) {
+  let buff = "";
+  let context = /* @__PURE__ */ new Map();
+  const write = (str) => {
+    buff += str;
   };
   return {
-    use: () => {
-      const _instance = _getCurrentInstance();
-      if (_instance === void 0) {
-        throw new Error("Context is not available");
+    toString() {
+      return buff;
+    },
+    getContext() {
+      return context;
+    },
+    dispatch(value) {
+      if (options.replacer) {
+        value = options.replacer(value);
       }
-      return _instance;
+      const type = value === null ? "null" : typeof value;
+      return this[type](value);
     },
-    tryUse: () => {
-      return _getCurrentInstance();
-    },
-    set: (instance, replace) => {
-      if (!replace) {
-        checkConflict(instance);
+    object(object) {
+      if (object && typeof object.toJSON === "function") {
+        return this.object(object.toJSON());
       }
-      currentInstance = instance;
-      isSingleton = true;
-    },
-    unset: () => {
-      currentInstance = void 0;
-      isSingleton = false;
-    },
-    call: (instance, callback) => {
-      checkConflict(instance);
-      currentInstance = instance;
-      try {
-        return als ? als.run(instance, callback) : callback();
-      } finally {
-        if (!isSingleton) {
-          currentInstance = void 0;
+      const objString = Object.prototype.toString.call(object);
+      let objType = "";
+      const objectLength = objString.length;
+      if (objectLength < 10) {
+        objType = "unknown:[" + objString + "]";
+      } else {
+        objType = objString.slice(8, objectLength - 1);
+      }
+      objType = objType.toLowerCase();
+      let objectNumber = null;
+      if ((objectNumber = context.get(object)) === void 0) {
+        context.set(object, context.size);
+      } else {
+        return this.dispatch("[CIRCULAR:" + objectNumber + "]");
+      }
+      if (typeof Buffer !== "undefined" && Buffer.isBuffer && Buffer.isBuffer(object)) {
+        write("buffer:");
+        return write(object.toString("utf8"));
+      }
+      if (objType !== "object" && objType !== "function" && objType !== "asyncfunction") {
+        if (this[objType]) {
+          this[objType](object);
+        } else if (!options.ignoreUnknown) {
+          this.unkown(object, objType);
+        }
+      } else {
+        let keys = Object.keys(object);
+        if (options.unorderedObjects) {
+          keys = keys.sort();
+        }
+        let extraKeys = [];
+        if (options.respectType !== false && !isNativeFunction(object)) {
+          extraKeys = defaultPrototypesKeys;
+        }
+        if (options.excludeKeys) {
+          keys = keys.filter((key) => {
+            return !options.excludeKeys(key);
+          });
+          extraKeys = extraKeys.filter((key) => {
+            return !options.excludeKeys(key);
+          });
+        }
+        write("object:" + (keys.length + extraKeys.length) + ":");
+        const dispatchForKey = (key) => {
+          this.dispatch(key);
+          write(":");
+          if (!options.excludeValues) {
+            this.dispatch(object[key]);
+          }
+          write(",");
+        };
+        for (const key of keys) {
+          dispatchForKey(key);
+        }
+        for (const key of extraKeys) {
+          dispatchForKey(key);
         }
       }
     },
-    async callAsync(instance, callback) {
-      currentInstance = instance;
-      const onRestore = () => {
-        currentInstance = instance;
-      };
-      const onLeave = () => currentInstance === instance ? onRestore : void 0;
-      asyncHandlers.add(onLeave);
-      try {
-        const r = als ? als.run(instance, callback) : callback();
-        if (!isSingleton) {
-          currentInstance = void 0;
+    array(arr, unordered) {
+      unordered = unordered === void 0 ? options.unorderedArrays !== false : unordered;
+      write("array:" + arr.length + ":");
+      if (!unordered || arr.length <= 1) {
+        for (const entry of arr) {
+          this.dispatch(entry);
         }
-        return await r;
-      } finally {
-        asyncHandlers.delete(onLeave);
+        return;
       }
+      const contextAdditions = /* @__PURE__ */ new Map();
+      const entries = arr.map((entry) => {
+        const hasher = createHasher(options);
+        hasher.dispatch(entry);
+        for (const [key, value] of hasher.getContext()) {
+          contextAdditions.set(key, value);
+        }
+        return hasher.toString();
+      });
+      context = contextAdditions;
+      entries.sort();
+      return this.array(entries, false);
+    },
+    date(date) {
+      return write("date:" + date.toJSON());
+    },
+    symbol(sym) {
+      return write("symbol:" + sym.toString());
+    },
+    unkown(value, type) {
+      write(type);
+      if (!value) {
+        return;
+      }
+      write(":");
+      if (value && typeof value.entries === "function") {
+        return this.array(
+          Array.from(value.entries()),
+          true
+          /* ordered */
+        );
+      }
+    },
+    error(err) {
+      return write("error:" + err.toString());
+    },
+    boolean(bool) {
+      return write("bool:" + bool);
+    },
+    string(string) {
+      write("string:" + string.length + ":");
+      write(string);
+    },
+    function(fn) {
+      write("fn:");
+      if (isNativeFunction(fn)) {
+        this.dispatch("[native]");
+      } else {
+        this.dispatch(fn.toString());
+      }
+      if (options.respectFunctionNames !== false) {
+        this.dispatch("function-name:" + String(fn.name));
+      }
+      if (options.respectFunctionProperties) {
+        this.object(fn);
+      }
+    },
+    number(number) {
+      return write("number:" + number);
+    },
+    xml(xml) {
+      return write("xml:" + xml.toString());
+    },
+    null() {
+      return write("Null");
+    },
+    undefined() {
+      return write("Undefined");
+    },
+    regexp(regex) {
+      return write("regex:" + regex.toString());
+    },
+    uint8array(arr) {
+      write("uint8array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    uint8clampedarray(arr) {
+      write("uint8clampedarray:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    int8array(arr) {
+      write("int8array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    uint16array(arr) {
+      write("uint16array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    int16array(arr) {
+      write("int16array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    uint32array(arr) {
+      write("uint32array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    int32array(arr) {
+      write("int32array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    float32array(arr) {
+      write("float32array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    float64array(arr) {
+      write("float64array:");
+      return this.dispatch(Array.prototype.slice.call(arr));
+    },
+    arraybuffer(arr) {
+      write("arraybuffer:");
+      return this.dispatch(new Uint8Array(arr));
+    },
+    url(url) {
+      return write("url:" + url.toString());
+    },
+    map(map) {
+      write("map:");
+      const arr = [...map];
+      return this.array(arr, options.unorderedSets !== false);
+    },
+    set(set) {
+      write("set:");
+      const arr = [...set];
+      return this.array(arr, options.unorderedSets !== false);
+    },
+    file(file) {
+      write("file:");
+      return this.dispatch([file.name, file.size, file.type, file.lastModfied]);
+    },
+    blob() {
+      if (options.ignoreUnknown) {
+        return write("[blob]");
+      }
+      throw new Error(
+        'Hashing Blob objects is currently not supported\nUse "options.replacer" or "options.ignoreUnknown"\n'
+      );
+    },
+    domwindow() {
+      return write("domwindow");
+    },
+    bigint(number) {
+      return write("bigint:" + number.toString());
+    },
+    /* Node.js standard native objects */
+    process() {
+      return write("process");
+    },
+    timer() {
+      return write("timer");
+    },
+    pipe() {
+      return write("pipe");
+    },
+    tcp() {
+      return write("tcp");
+    },
+    udp() {
+      return write("udp");
+    },
+    tty() {
+      return write("tty");
+    },
+    statwatcher() {
+      return write("statwatcher");
+    },
+    securecontext() {
+      return write("securecontext");
+    },
+    connection() {
+      return write("connection");
+    },
+    zlib() {
+      return write("zlib");
+    },
+    context() {
+      return write("context");
+    },
+    nodescript() {
+      return write("nodescript");
+    },
+    httpparser() {
+      return write("httpparser");
+    },
+    dataview() {
+      return write("dataview");
+    },
+    signal() {
+      return write("signal");
+    },
+    fsevent() {
+      return write("fsevent");
+    },
+    tlswrap() {
+      return write("tlswrap");
     }
   };
 }
-function createNamespace(defaultOpts = {}) {
-  const contexts = {};
+const nativeFunc = "[native code] }";
+const nativeFuncLength = nativeFunc.length;
+function isNativeFunction(f) {
+  if (typeof f !== "function") {
+    return false;
+  }
+  return Function.prototype.toString.call(f).slice(-nativeFuncLength) === nativeFunc;
+}
+
+function isEqual(object1, object2, hashOptions = {}) {
+  if (object1 === object2) {
+    return true;
+  }
+  if (objectHash(object1, hashOptions) === objectHash(object2, hashOptions)) {
+    return true;
+  }
+  return false;
+}
+
+function diff(obj1, obj2, opts = {}) {
+  const h1 = _toHashedObject(obj1, opts);
+  const h2 = _toHashedObject(obj2, opts);
+  return _diff(h1, h2, opts);
+}
+function _diff(h1, h2, opts = {}) {
+  const diffs = [];
+  const allProps = /* @__PURE__ */ new Set([
+    ...Object.keys(h1.props || {}),
+    ...Object.keys(h2.props || {})
+  ]);
+  if (h1.props && h2.props) {
+    for (const prop of allProps) {
+      const p1 = h1.props[prop];
+      const p2 = h2.props[prop];
+      if (p1 && p2) {
+        diffs.push(..._diff(h1.props?.[prop], h2.props?.[prop], opts));
+      } else if (p1 || p2) {
+        diffs.push(
+          new DiffEntry((p2 || p1).key, p1 ? "removed" : "added", p2, p1)
+        );
+      }
+    }
+  }
+  if (allProps.size === 0 && h1.hash !== h2.hash) {
+    diffs.push(new DiffEntry((h2 || h1).key, "changed", h2, h1));
+  }
+  return diffs;
+}
+function _toHashedObject(obj, opts, key = "") {
+  if (obj && typeof obj !== "object") {
+    return new DiffHashedObject(key, obj, objectHash(obj, opts));
+  }
+  const props = {};
+  const hashes = [];
+  for (const _key in obj) {
+    props[_key] = _toHashedObject(
+      obj[_key],
+      opts,
+      key ? `${key}.${_key}` : _key
+    );
+    hashes.push(props[_key].hash);
+  }
+  return new DiffHashedObject(key, obj, `{${hashes.join(":")}}`, props);
+}
+class DiffEntry {
+  constructor(key, type, newValue, oldValue) {
+    this.key = key;
+    this.type = type;
+    this.newValue = newValue;
+    this.oldValue = oldValue;
+  }
+  toString() {
+    return this.toJSON();
+  }
+  toJSON() {
+    switch (this.type) {
+      case "added": {
+        return `Added   \`${this.key}\``;
+      }
+      case "removed": {
+        return `Removed \`${this.key}\``;
+      }
+      case "changed": {
+        return `Changed \`${this.key}\` from \`${this.oldValue?.toString() || "-"}\` to \`${this.newValue.toString()}\``;
+      }
+    }
+  }
+}
+class DiffHashedObject {
+  constructor(key, value, hash, props) {
+    this.key = key;
+    this.value = value;
+    this.hash = hash;
+    this.props = props;
+  }
+  toString() {
+    if (this.props) {
+      return `{${Object.keys(this.props).join(",")}}`;
+    } else {
+      return JSON.stringify(this.value);
+    }
+  }
+  toJSON() {
+    const k = this.key || ".";
+    if (this.props) {
+      return `${k}({${Object.keys(this.props).join(",")}})`;
+    }
+    return `${k}(${this.value})`;
+  }
+}
+
+const NODE_TYPES = {
+  NORMAL: 0,
+  WILDCARD: 1,
+  PLACEHOLDER: 2
+};
+
+function createRouter(options = {}) {
+  const ctx = {
+    options,
+    rootNode: createRadixNode(),
+    staticRoutesMap: {}
+  };
+  const normalizeTrailingSlash = (p) => options.strictTrailingSlash ? p : p.replace(/\/$/, "") || "/";
+  if (options.routes) {
+    for (const path in options.routes) {
+      insert(ctx, normalizeTrailingSlash(path), options.routes[path]);
+    }
+  }
   return {
-    get(key, opts = {}) {
-      if (!contexts[key]) {
-        contexts[key] = createContext({ ...defaultOpts, ...opts });
-      }
-      return contexts[key];
-    }
+    ctx,
+    lookup: (path) => lookup(ctx, normalizeTrailingSlash(path)),
+    insert: (path, data) => insert(ctx, normalizeTrailingSlash(path), data),
+    remove: (path) => remove(ctx, normalizeTrailingSlash(path))
   };
 }
-const _globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof global !== "undefined" ? global : {};
-const globalKey = "__unctx__";
-const defaultNamespace = _globalThis[globalKey] || (_globalThis[globalKey] = createNamespace());
-const getContext = (key, opts = {}) => defaultNamespace.get(key, opts);
-const asyncHandlersKey = "__unctx_async_handlers__";
-const asyncHandlers = _globalThis[asyncHandlersKey] || (_globalThis[asyncHandlersKey] = /* @__PURE__ */ new Set());
+function lookup(ctx, path) {
+  const staticPathNode = ctx.staticRoutesMap[path];
+  if (staticPathNode) {
+    return staticPathNode.data;
+  }
+  const sections = path.split("/");
+  const params = {};
+  let paramsFound = false;
+  let wildcardNode = null;
+  let node = ctx.rootNode;
+  let wildCardParam = null;
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    if (node.wildcardChildNode !== null) {
+      wildcardNode = node.wildcardChildNode;
+      wildCardParam = sections.slice(i).join("/");
+    }
+    const nextNode = node.children.get(section);
+    if (nextNode === void 0) {
+      if (node && node.placeholderChildren.length > 1) {
+        const remaining = sections.length - i;
+        node = node.placeholderChildren.find((c) => c.maxDepth === remaining) || null;
+      } else {
+        node = node.placeholderChildren[0] || null;
+      }
+      if (!node) {
+        break;
+      }
+      if (node.paramName) {
+        params[node.paramName] = section;
+      }
+      paramsFound = true;
+    } else {
+      node = nextNode;
+    }
+  }
+  if ((node === null || node.data === null) && wildcardNode !== null) {
+    node = wildcardNode;
+    params[node.paramName || "_"] = wildCardParam;
+    paramsFound = true;
+  }
+  if (!node) {
+    return null;
+  }
+  if (paramsFound) {
+    return {
+      ...node.data,
+      params: paramsFound ? params : void 0
+    };
+  }
+  return node.data;
+}
+function insert(ctx, path, data) {
+  let isStaticRoute = true;
+  const sections = path.split("/");
+  let node = ctx.rootNode;
+  let _unnamedPlaceholderCtr = 0;
+  const matchedNodes = [node];
+  for (const section of sections) {
+    let childNode;
+    if (childNode = node.children.get(section)) {
+      node = childNode;
+    } else {
+      const type = getNodeType(section);
+      childNode = createRadixNode({ type, parent: node });
+      node.children.set(section, childNode);
+      if (type === NODE_TYPES.PLACEHOLDER) {
+        childNode.paramName = section === "*" ? `_${_unnamedPlaceholderCtr++}` : section.slice(1);
+        node.placeholderChildren.push(childNode);
+        isStaticRoute = false;
+      } else if (type === NODE_TYPES.WILDCARD) {
+        node.wildcardChildNode = childNode;
+        childNode.paramName = section.slice(
+          3
+          /* "**:" */
+        ) || "_";
+        isStaticRoute = false;
+      }
+      matchedNodes.push(childNode);
+      node = childNode;
+    }
+  }
+  for (const [depth, node2] of matchedNodes.entries()) {
+    node2.maxDepth = Math.max(matchedNodes.length - depth, node2.maxDepth || 0);
+  }
+  node.data = data;
+  if (isStaticRoute === true) {
+    ctx.staticRoutesMap[path] = node;
+  }
+  return node;
+}
+function remove(ctx, path) {
+  let success = false;
+  const sections = path.split("/");
+  let node = ctx.rootNode;
+  for (const section of sections) {
+    node = node.children.get(section);
+    if (!node) {
+      return success;
+    }
+  }
+  if (node.data) {
+    const lastSection = sections.at(-1) || "";
+    node.data = null;
+    if (Object.keys(node.children).length === 0 && node.parent) {
+      node.parent.children.delete(lastSection);
+      node.parent.wildcardChildNode = null;
+      node.parent.placeholderChildren = [];
+    }
+    success = true;
+  }
+  return success;
+}
+function createRadixNode(options = {}) {
+  return {
+    type: options.type || NODE_TYPES.NORMAL,
+    maxDepth: 0,
+    parent: options.parent || null,
+    children: /* @__PURE__ */ new Map(),
+    data: options.data || null,
+    paramName: options.paramName || null,
+    wildcardChildNode: null,
+    placeholderChildren: []
+  };
+}
+function getNodeType(str) {
+  if (str.startsWith("**")) {
+    return NODE_TYPES.WILDCARD;
+  }
+  if (str[0] === ":" || str === "*") {
+    return NODE_TYPES.PLACEHOLDER;
+  }
+  return NODE_TYPES.NORMAL;
+}
+
+function toRouteMatcher(router) {
+  const table = _routerNodeToTable("", router.ctx.rootNode);
+  return _createMatcher(table, router.ctx.options.strictTrailingSlash);
+}
+function _createMatcher(table, strictTrailingSlash) {
+  return {
+    ctx: { table },
+    matchAll: (path) => _matchRoutes(path, table, strictTrailingSlash)
+  };
+}
+function _createRouteTable() {
+  return {
+    static: /* @__PURE__ */ new Map(),
+    wildcard: /* @__PURE__ */ new Map(),
+    dynamic: /* @__PURE__ */ new Map()
+  };
+}
+function _matchRoutes(path, table, strictTrailingSlash) {
+  if (strictTrailingSlash !== true && path.endsWith("/")) {
+    path = path.slice(0, -1) || "/";
+  }
+  const matches = [];
+  for (const [key, value] of _sortRoutesMap(table.wildcard)) {
+    if (path === key || path.startsWith(key + "/")) {
+      matches.push(value);
+    }
+  }
+  for (const [key, value] of _sortRoutesMap(table.dynamic)) {
+    if (path.startsWith(key + "/")) {
+      const subPath = "/" + path.slice(key.length).split("/").splice(2).join("/");
+      matches.push(..._matchRoutes(subPath, value));
+    }
+  }
+  const staticMatch = table.static.get(path);
+  if (staticMatch) {
+    matches.push(staticMatch);
+  }
+  return matches.filter(Boolean);
+}
+function _sortRoutesMap(m) {
+  return [...m.entries()].sort((a, b) => a[0].length - b[0].length);
+}
+function _routerNodeToTable(initialPath, initialNode) {
+  const table = _createRouteTable();
+  function _addNode(path, node) {
+    if (path) {
+      if (node.type === NODE_TYPES.NORMAL && !(path.includes("*") || path.includes(":"))) {
+        if (node.data) {
+          table.static.set(path, node.data);
+        }
+      } else if (node.type === NODE_TYPES.WILDCARD) {
+        table.wildcard.set(path.replace("/**", ""), node.data);
+      } else if (node.type === NODE_TYPES.PLACEHOLDER) {
+        const subTable = _routerNodeToTable("", node);
+        if (node.data) {
+          subTable.static.set("/", node.data);
+        }
+        table.dynamic.set(path.replace(/\/\*|\/:\w+/, ""), subTable);
+        return;
+      }
+    }
+    for (const [childPath, child] of node.children.entries()) {
+      _addNode(`${path}/${childPath}`.replace("//", "/"), child);
+    }
+  }
+  _addNode(initialPath, initialNode);
+  return table;
+}
+
+function hasProp(obj, prop) {
+  try {
+    return prop in obj;
+  } catch {
+    return false;
+  }
+}
+
+class H3Error extends Error {
+  static __h3_error__ = true;
+  statusCode = 500;
+  fatal = false;
+  unhandled = false;
+  statusMessage;
+  data;
+  cause;
+  constructor(message, opts = {}) {
+    super(message, opts);
+    if (opts.cause && !this.cause) {
+      this.cause = opts.cause;
+    }
+  }
+  toJSON() {
+    const obj = {
+      message: this.message,
+      statusCode: sanitizeStatusCode(this.statusCode, 500)
+    };
+    if (this.statusMessage) {
+      obj.statusMessage = sanitizeStatusMessage(this.statusMessage);
+    }
+    if (this.data !== undefined) {
+      obj.data = this.data;
+    }
+    return obj;
+  }
+}
+function createError(input) {
+  if (typeof input === "string") {
+    return new H3Error(input);
+  }
+  if (isError(input)) {
+    return input;
+  }
+  const err = new H3Error(input.message ?? input.statusMessage ?? "", {
+    cause: input.cause || input
+  });
+  if (hasProp(input, "stack")) {
+    try {
+      Object.defineProperty(err, "stack", {
+        get() {
+          return input.stack;
+        }
+      });
+    } catch {
+      try {
+        err.stack = input.stack;
+      } catch {
+      }
+    }
+  }
+  if (input.data) {
+    err.data = input.data;
+  }
+  if (input.statusCode) {
+    err.statusCode = sanitizeStatusCode(input.statusCode, err.statusCode);
+  } else if (input.status) {
+    err.statusCode = sanitizeStatusCode(input.status, err.statusCode);
+  }
+  if (input.statusMessage) {
+    err.statusMessage = input.statusMessage;
+  } else if (input.statusText) {
+    err.statusMessage = input.statusText;
+  }
+  if (err.statusMessage) {
+    const originalMessage = err.statusMessage;
+    const sanitizedMessage = sanitizeStatusMessage(err.statusMessage);
+    if (sanitizedMessage !== originalMessage) {
+      console.warn(
+        "[h3] Please prefer using `message` for longer error messages instead of `statusMessage`. In the future, `statusMessage` will be sanitized by default."
+      );
+    }
+  }
+  if (input.fatal !== undefined) {
+    err.fatal = input.fatal;
+  }
+  if (input.unhandled !== undefined) {
+    err.unhandled = input.unhandled;
+  }
+  return err;
+}
+function isError(input) {
+  return input?.constructor?.__h3_error__ === true;
+}
+function getRequestHost(event, opts = {}) {
+  if (opts.xForwardedHost) {
+    const xForwardedHost = event.node.req.headers["x-forwarded-host"];
+    if (xForwardedHost) {
+      return xForwardedHost;
+    }
+  }
+  return event.node.req.headers.host || "localhost";
+}
+function getRequestProtocol(event, opts = {}) {
+  if (opts.xForwardedProto !== false && event.node.req.headers["x-forwarded-proto"] === "https") {
+    return "https";
+  }
+  return event.node.req.connection?.encrypted ? "https" : "http";
+}
+function getRequestURL(event, opts = {}) {
+  const host = getRequestHost(event, opts);
+  const protocol = getRequestProtocol(event, opts);
+  const path = (event.node.req.originalUrl || event.path).replace(
+    /^[/\\]+/g,
+    "/"
+  );
+  return new URL(path, `${protocol}://${host}`);
+}
+
+const DISALLOWED_STATUS_CHARS = /[^\u0009\u0020-\u007E]/g;
+function sanitizeStatusMessage(statusMessage = "") {
+  return statusMessage.replace(DISALLOWED_STATUS_CHARS, "");
+}
+function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
+  if (!statusCode) {
+    return defaultStatusCode;
+  }
+  if (typeof statusCode === "string") {
+    statusCode = Number.parseInt(statusCode, 10);
+  }
+  if (statusCode < 100 || statusCode > 999) {
+    return defaultStatusCode;
+  }
+  return statusCode;
+}
+
+typeof setImmediate === "undefined" ? (fn) => fn() : setImmediate;
 
 function baseURL() {
   return useRuntimeConfig().app.baseURL;
@@ -6211,18 +7096,16 @@ function publicAssetsURL(...path) {
   return path.length ? joinRelativeURL(publicBase, ...path) : publicBase;
 }
 
-const require = createRequire(globalThis._importMeta_.url);
-
 const collections = {
-  'heroicons': () => require('@iconify-json/heroicons/icons.json'),
-  'vscode-icons': () => require('@iconify-json/vscode-icons/icons.json'),
+  'heroicons': () => import('./icons.mjs').then(m => m.default),
+  'vscode-icons': () => import('./icons2.mjs').then(m => m.default),
 };
 
 const DEFAULT_ENDPOINT = "https://api.iconify.design";
-const _aJ6DJ1 = defineCachedEventHandler(async (event) => {
+const _LgejxW = defineCachedEventHandler(async (event) => {
   const url = getRequestURL(event);
   if (!url)
-    return createError$1({ status: 400, message: "Invalid icon request" });
+    return createError$2({ status: 400, message: "Invalid icon request" });
   const options = useAppConfig().icon;
   const collectionName = event.context.params?.collection?.replace(/\.json$/, "");
   const collection = collectionName ? await collections[collectionName]?.() : null;
@@ -6242,7 +7125,7 @@ const _aJ6DJ1 = defineCachedEventHandler(async (event) => {
     const apiUrl = new URL("./" + basename(url.pathname) + url.search, apiEndPoint);
     consola.debug(`[Icon] fetching ${(icons || []).map((i) => "`" + collectionName + ":" + i + "`").join(",")} from iconify api`);
     if (apiUrl.host !== new URL(apiEndPoint).host) {
-      return createError$1({ status: 400, message: "Invalid icon request" });
+      return createError$2({ status: 400, message: "Invalid icon request" });
     }
     try {
       const data = await $fetch(apiUrl.href);
@@ -6250,12 +7133,12 @@ const _aJ6DJ1 = defineCachedEventHandler(async (event) => {
     } catch (e) {
       consola.error(e);
       if (e.status === 404)
-        return createError$1({ status: 404 });
+        return createError$2({ status: 404 });
       else
-        return createError$1({ status: 500, message: "Failed to fetch fallback icon" });
+        return createError$2({ status: 500, message: "Failed to fetch fallback icon" });
     }
   }
-  return createError$1({ status: 404 });
+  return createError$2({ status: 404 });
 }, {
   group: "nuxt",
   name: "icon",
@@ -6269,13 +7152,13 @@ const _aJ6DJ1 = defineCachedEventHandler(async (event) => {
   // 1 week
 });
 
-const _lazy_6lv7oX = () => import('../routes/renderer.mjs');
+const _lazy_g21IBk = () => import('../routes/renderer.mjs');
 
 const handlers = [
-  { route: '', handler: _Yxpgdd, lazy: false, middleware: true, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_6lv7oX, lazy: true, middleware: false, method: undefined },
-  { route: '/api/_nuxt_icon/:collection', handler: _aJ6DJ1, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_6lv7oX, lazy: true, middleware: false, method: undefined }
+  { route: '', handler: _uO7pOV, lazy: false, middleware: true, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_g21IBk, lazy: true, middleware: false, method: undefined },
+  { route: '/api/_nuxt_icon/:collection', handler: _LgejxW, lazy: false, middleware: false, method: undefined },
+  { route: '/**', handler: _lazy_g21IBk, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -6296,7 +7179,7 @@ function createNitroApp() {
     }
   };
   const h3App = createApp({
-    debug: destr(false),
+    debug: destr$1(false),
     onError: (error, event) => {
       captureError(error, { event, tags: ["request"] });
       return errorHandler(error, event);
@@ -6317,7 +7200,7 @@ function createNitroApp() {
       });
     }
   });
-  const router = createRouter({
+  const router = createRouter$1({
     preemptive: true
   });
   const localCall = createCall(toNodeListener(h3App));
@@ -6651,5 +7534,5 @@ function setupGracefulShutdown(listener, nitroApp) {
   });
 }
 
-export { $fetch$1 as $, toRouteMatcher as A, createRouter$1 as B, upperFirst as C, isEqual as D, diff as E, parseQuery as F, withTrailingSlash as G, withoutTrailingSlash as H, trapUnhandledNodeErrors as a, useNitroApp as b, defineRenderHandler as c, destr as d, buildAssetsURL as e, createError$1 as f, getQuery as g, getRouteRules as h, getResponseStatusText as i, getResponseStatus as j, defuFn as k, klona as l, defu as m, createDefu as n, hasProtocol as o, publicAssetsURL as p, isScriptProtocol as q, joinURL as r, setupGracefulShutdown as s, toNodeListener as t, useRuntimeConfig as u, sanitizeStatusCode as v, withQuery as w, getContext as x, baseURL as y, createHooks as z };
+export { toRouteMatcher as A, createRouter as B, isEqual as C, diff as D, parseQuery as E, withTrailingSlash as F, withoutTrailingSlash as G, trapUnhandledNodeErrors as a, useNitroApp as b, defineRenderHandler as c, destr$1 as d, buildAssetsURL as e, createError$2 as f, getQuery as g, getRouteRules as h, getResponseStatusText as i, getResponseStatus as j, destr as k, withQuery as l, defuFn as m, createError as n, defu as o, publicAssetsURL as p, createDefu as q, hasProtocol as r, setupGracefulShutdown as s, toNodeListener as t, useRuntimeConfig as u, isScriptProtocol as v, withBase as w, joinURL as x, sanitizeStatusCode as y, baseURL as z };
 //# sourceMappingURL=nitro.mjs.map

@@ -13,7 +13,6 @@ import 'node:url';
 import '@iconify/utils';
 import 'consola/core';
 import 'node:path';
-import 'node:module';
 
 const Vue3 = version[0] === "3";
 
