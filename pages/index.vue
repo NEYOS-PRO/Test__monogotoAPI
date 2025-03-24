@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div>
         <div class="flex flex-col md:flex-row md:justify-between items-center mx-3">   
             <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
