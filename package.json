@@ -17,6 +17,7 @@
     "date-fns": "^2.30.0",
     "nuxt": "^3.15.4",
     "nuxt-highlightjs": "^1.0.3",
+    "nuxt-pdfeasy": "^1.4.0",
     "v-calendar": "^3.1.2",
     "vue": "latest",
     "vue-router": "latest"

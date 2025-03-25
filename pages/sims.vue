@@ -11,7 +11,6 @@
                     <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
                     <UButton
                         size="xs"
-                        color="blue"
                         variant="solid"
                         label="Activate"
                         :disabled="selected.length === 0"

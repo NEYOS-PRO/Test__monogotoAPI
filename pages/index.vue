@@ -1,30 +1,9 @@
 <template>
     <div>
         <div class="flex flex-col md:flex-row md:justify-between items-center p-3 mx-3">   
-            <!-- <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
-                <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
-                <UButton
-                    size="xs"
-                    color="blue"
-                    variant="solid"
-                    label="Activate"
-                    :disabled="selected.length === 0"
-                    :trailing="false"
-                    @click="ActivateSim"
-                />
-
-                <UButton
-                    size="xs"
-                    color="red"
-                    variant="solid"
-                    label="Desactivate"
-                    :disabled="selected.length === 0"
-                    :trailing="false"
-                    @click="isModalOpen = true"
-                />
-            </div> -->
-            <div class="flex justify-start px-3 py-3.5">
+            <div class="flex items-center space-x-4 justify-start px-3 py-3.5">
                 <UInput v-model="q" placeholder="Filter ICCID..." />
+                <UButton @click="downloadCSV" label="Download CSV" />
             </div>
             <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
@@ -53,8 +32,6 @@
             </UPopover>
         </div>
 
-        <!-- Spinner component -->
-        <!-- <Spinner v-if="loading === 'pending'" /> -->
 
         <UTable
          class="txt-xs"
@@ -79,40 +56,7 @@
         </UTable>
 
         <!--Pagination-->
-        <UPagination class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
-
-        <!---Modal Altert Delete SIM-->
-
-        <UModal v-model="isModalOpen" prevent-close>
-          <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-            <template #header>
-              <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                  Souhaitez-vous vraiment désactiver cette SIM ?
-                </h3>
-                <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
-              </div>
-            </template>
-
-            <div calss="p-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Vous êtes sur le point de désactiver la SIM sélectionnée. Voulez-vous continuer ?
-                </p>
-                <div class="flex justify-end mt-4">
-                    <UButton color="gray" variant="ghost" label="Annuler" @click="isModalOpen = false" />
-                    <UButton color="red" variant="solid" label="Désactiver" @click="DesactivateSim" />          
-                </div>
-            </div>
-          </UCard>
-        </UModal>
-
-        <!--Modal Message-->
-        <UModal v-model="modalMessageOpen" :transition="false">
-          <div class="p-4 flex justify-between items-center flex-row space-y-2">
-            <p>{{ modalMEssage }}</p>
-            <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
-          </div>
-        </UModal>
+        <UPagination v-if="q === ''" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
     </div>
 </template>
 
@@ -121,6 +65,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
 import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
+import { da } from 'date-fns/locale';
 const runtimeConfig = useRuntimeConfig(); 
 
 const selected = ref([]); 
@@ -152,20 +97,6 @@ const rows = computed(() => {
   return items.value.slice(start, end);
 });
 
-
-/**
- * Recupération de l'id de la SIM sélectionnée...
- * @param row 
- */
-
-// function select(row) {
-//   const index = selected.value.findIndex(item => item.id === row.id);
-//   if (index === -1) {
-//     selected.value.push(row);
-//   } else {
-//     selected.value.splice(index, 1);
-//   }
-// }
 
 const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
@@ -273,71 +204,6 @@ const isModalOpen = ref(false);
 const modalMEssage = ref(null); 
 const modalMessageOpen = ref(false);
 
-/***
- * Activate des SIMs
- */
-
-// const ActivateSim = async () => {
-
-//   const ICCID = selected.value[0]['ICCID'];
-
-//   try {
-//     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
-
-//     if (response.ok) {
-//       console.log('SIMs Activated successfully');
-//       modalMEssage.value = 'SIMs Activated successfully';
-//       selected.value = [];
-//       modalMessageOpen.value = true;
-//       /**
-//        * Après 2 sec désactivé le modal
-//        */
-//       setTimeout(async () => {
-//         modalMessageOpen.value = false;
-//         selected.value = [];
-//         await fetchReport(); // Fetch updated data
-//       }, 2000);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-/**
- * Desactivate des SIMs
- */
-// const DesactivateSim = async () => {
-
-//   const ICCID = selected.value[0]['ICCID'];
-
-//   console.log('ICCID:', ICCID);
-
-//   try {
-//     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
-
-//     if (response.ok) {
-//       console.log('SIMs Desactivate successfully');
-//       modalMEssage.value = 'SIMs Desactivate successfully';
-//       selected.value = [];
-//       modalMessageOpen.value = true;
-//       isModalOpen.value = false;
-//       /**
-//        * Après 2 sec désactivé le modal
-//        */
-//       setTimeout(async () => {
-//         modalMessageOpen.value = false;
-//         selected.value = [];
-//         await fetchReport(); // Fetch updated data
-//       }, 2000);
-//     } else {
-//       const errorText = await response.text();
-//       console.log('Failed to desactivate SIM:', errorText);
-//     }
-//   } catch (error) {
-//     console.log('Error:', error);
-//   }
-// }
-
 
 // Ajout de la référence pour la recherche
 const q = ref('');
@@ -354,5 +220,53 @@ const filteredRows = computed(() => {
   });
 });
 
+/**
+ * Upload files in csv
+ */
+
+ function jsonToCsv(jsonData) {
+  if (jsonData.length === 0) {
+    return 'No data available';
+  }
+
+  let csv = '';
+  
+  // Extract headers
+  const headers = Object.keys(jsonData[0]);
+  csv += headers.join(',') + '\n';
+  
+  // Extract values
+  jsonData.forEach(obj => {
+    const values = headers.map(header => obj[header]);
+    csv += values.join(',') + '\n';
+  });
+  
+  return csv;
+}
+
+async function downloadCSV() {
+  const csvContent = await getCSV();
+  if (csvContent === 'No data available') {
+    alert(csvContent);
+    return;
+  }
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'data.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function getCSV() {
+  if (data.value.length === 0) {
+    return 'No data available';
+  }
+  return jsonToCsv(data.value);
+}
 
 </script>
