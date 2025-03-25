@@ -46,7 +46,7 @@
         </UTable>
 
         <!--Pagination-->
-        <UPagination class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+        <UPagination v-if="q === ''" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
 
         <!---Modal Altert Delete SIM-->
 
