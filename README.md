@@ -29,6 +29,12 @@ Ce projet est une application Nuxt pour l'API de monogoto. Il offre des fonction
     # bun
     bun install
   ```
+
+## Routes 
+
+- `/` :Cette page affiche les rapports des SIMs en fonction de la date sélectionnée. par défaut les données sont affichées à l'interval de 7 jours.
+- `/sims/` : Cette page affiche la liste des SIMs disponibles et permet de les activer/désactiver.
+
 ## Fonctionnalités
 
 1. Activation/Désactivation des SIMs : Activez ou désactivez les SIMs sélectionnées.
