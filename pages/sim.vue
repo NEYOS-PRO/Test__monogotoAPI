@@ -46,4 +46,19 @@ onMounted(()=>{
     fetchData();
 });  
 
+
+const q = ref('')
+
+// const filteredRows = computed(() => {
+//   if (!q.value) {
+//     return data
+//   }
+
+//   return data.filter((person) => {
+//     return Object.values(person).some((value) => {
+//       return String(value).toLowerCase().includes(q.value.toLowerCase())
+//     })
+//   })
+// })
+
 </script>

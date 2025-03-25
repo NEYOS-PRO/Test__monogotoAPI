@@ -165,7 +165,6 @@ function select(row) {
 }
 
 const columns = [
-  { key: 'Thing Name', label: 'Thing Name', sortable: true },
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
   { key: 'Status', label: 'Status', sortable: true },
