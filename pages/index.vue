@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="flex flex-col md:flex-row md:justify-between items-center mx-3">   
-            <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
+        <div class="flex flex-col md:flex-row md:justify-between items-center p-3 mx-3">   
+            <!-- <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
                 <UButton
                     size="xs"
@@ -22,8 +22,8 @@
                     :trailing="false"
                     @click="isModalOpen = true"
                 />
-            </div>
-            <UPopover :popper="{ placement: 'bottom-start' }">
+            </div> -->
+            <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
                 {{ format(selectedDate.start, 'd MMM, yyy') }} - {{ format(selectedDate.end, 'd MMM, yyy') }}
                 </UButton>
@@ -57,7 +57,7 @@
          class="txt-xs"
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
          :progress="{ color: 'info', animation: 'swing' }"
-         :columns="selectedColumns" :rows="rows" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="rows" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
                 <div>
@@ -155,19 +155,18 @@ const rows = computed(() => {
  * @param row 
  */
 
-function select(row) {
-  const index = selected.value.findIndex(item => item.id === row.id);
-  if (index === -1) {
-    selected.value.push(row);
-  } else {
-    selected.value.splice(index, 1);
-  }
-}
+// function select(row) {
+//   const index = selected.value.findIndex(item => item.id === row.id);
+//   if (index === -1) {
+//     selected.value.push(row);
+//   } else {
+//     selected.value.splice(index, 1);
+//   }
+// }
 
 const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
-  { key: 'Status', label: 'Status', sortable: true },
   { key: 'lastOperators', label: 'Last Operators', sortable: true }, 
   { key: 'lastData', label: 'Last Data', sortable: true },
   { key: 'totalData', label: 'Total Data', sortable: true }
@@ -275,66 +274,66 @@ const modalMessageOpen = ref(false);
  * Activate des SIMs
  */
 
-const ActivateSim = async () => {
+// const ActivateSim = async () => {
 
-  const ICCID = selected.value[0]['ICCID'];
+//   const ICCID = selected.value[0]['ICCID'];
 
-  try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
+//   try {
+//     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
 
-    if (response.ok) {
-      console.log('SIMs Activated successfully');
-      modalMEssage.value = 'SIMs Activated successfully';
-      selected.value = [];
-      modalMessageOpen.value = true;
-      /**
-       * Après 2 sec désactivé le modal
-       */
-      setTimeout(async () => {
-        modalMessageOpen.value = false;
-        selected.value = [];
-        await fetchReport(); // Fetch updated data
-      }, 2000);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
+//     if (response.ok) {
+//       console.log('SIMs Activated successfully');
+//       modalMEssage.value = 'SIMs Activated successfully';
+//       selected.value = [];
+//       modalMessageOpen.value = true;
+//       /**
+//        * Après 2 sec désactivé le modal
+//        */
+//       setTimeout(async () => {
+//         modalMessageOpen.value = false;
+//         selected.value = [];
+//         await fetchReport(); // Fetch updated data
+//       }, 2000);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
 
 /**
  * Desactivate des SIMs
  */
-const DesactivateSim = async () => {
+// const DesactivateSim = async () => {
 
-  const ICCID = selected.value[0]['ICCID'];
+//   const ICCID = selected.value[0]['ICCID'];
 
-  console.log('ICCID:', ICCID);
+//   console.log('ICCID:', ICCID);
 
-  try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
+//   try {
+//     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
 
-    if (response.ok) {
-      console.log('SIMs Desactivate successfully');
-      modalMEssage.value = 'SIMs Desactivate successfully';
-      selected.value = [];
-      modalMessageOpen.value = true;
-      isModalOpen.value = false;
-      /**
-       * Après 2 sec désactivé le modal
-       */
-      setTimeout(async () => {
-        modalMessageOpen.value = false;
-        selected.value = [];
-        await fetchReport(); // Fetch updated data
-      }, 2000);
-    } else {
-      const errorText = await response.text();
-      console.log('Failed to desactivate SIM:', errorText);
-    }
-  } catch (error) {
-    console.log('Error:', error);
-  }
-}
+//     if (response.ok) {
+//       console.log('SIMs Desactivate successfully');
+//       modalMEssage.value = 'SIMs Desactivate successfully';
+//       selected.value = [];
+//       modalMessageOpen.value = true;
+//       isModalOpen.value = false;
+//       /**
+//        * Après 2 sec désactivé le modal
+//        */
+//       setTimeout(async () => {
+//         modalMessageOpen.value = false;
+//         selected.value = [];
+//         await fetchReport(); // Fetch updated data
+//       }, 2000);
+//     } else {
+//       const errorText = await response.text();
+//       console.log('Failed to desactivate SIM:', errorText);
+//     }
+//   } catch (error) {
+//     console.log('Error:', error);
+//   }
+// }
 
 
 </script>
