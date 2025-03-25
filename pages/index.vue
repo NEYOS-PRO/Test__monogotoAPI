@@ -3,15 +3,15 @@
         <div class="flex flex-col md:flex-row md:justify-between items-center p-3 mx-3">   
             <div class="flex items-center space-x-4 justify-start px-3 py-3.5">
                 <UInput v-model="q" placeholder="Filter ICCID..." />
-                <UButton @click="downloadCSV" label="Download CSV" size="xs" />
+                <UButton @click="downloadCSV" label="Download CSV" />
             </div>
-            <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3 text-xs">
+            <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
                 {{ format(selectedDate.start, 'd MMM, yyy') }} - {{ format(selectedDate.end, 'd MMM, yyy') }}
                 </UButton>
 
                 <template #panel="{ close }">
-                <div class="flex  text-xs items-center">
+                <div class="flex items-center">
                     <div class="hidden sm:flex flex-col py-4">
                         <UButton
                             v-for="(range, index) in ranges"
@@ -19,19 +19,19 @@
                             :label="range.label"
                             color="gray"
                             variant="ghost"
-                            class="rounded-none px-6 text-xs"
-                            :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800 text-xs' : 'hover:bg-gray-50 text-xs dark:hover:bg-gray-800/50']"
+                            class="rounded-none px-6"
+                            :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
                             truncate
                             @click="selectRange(range.duration)"
                         />
                     </div>
 
-                    <DatePicker v-model="selectedDate" @close="close" class="text-xs" />
+                    <DatePicker v-model="selectedDate" @close="close" />
                 </div>
                 </template>
             </UPopover>
         </div>
-
+        
 
         <UTable
          class="txt-xs"
