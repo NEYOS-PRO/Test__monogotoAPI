@@ -23,6 +23,9 @@
                     @click="isModalOpen = true"
                 />
             </div> -->
+            <div class="flex justify-start px-3 py-3.5">
+                <UInput v-model="q" placeholder="Filter ICCID..." />
+            </div>
             <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
                 {{ format(selectedDate.start, 'd MMM, yyy') }} - {{ format(selectedDate.end, 'd MMM, yyy') }}
@@ -57,7 +60,7 @@
          class="txt-xs"
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
          :progress="{ color: 'info', animation: 'swing' }"
-         :columns="selectedColumns" :rows="rows" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="filteredRows" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
                 <div>
@@ -134,7 +137,7 @@ const data = ref([]);
  */
 const page = ref(1);
 const items = ref(data);
-const pageCount = 5;
+const pageCount = 6;
 
 const loading = ref("pending");
 
@@ -334,6 +337,22 @@ const modalMessageOpen = ref(false);
 //     console.log('Error:', error);
 //   }
 // }
+
+
+// Ajout de la référence pour la recherche
+const q = ref('');
+
+// Propriété calculée pour filtrer les lignes en fonction de la valeur de q
+const filteredRows = computed(() => {
+  if (!q.value) {
+    return rows.value;
+  }
+  return rows.value.filter((row) => {
+    return Object.values(row).some((value) => {
+      return String(value).toLowerCase().includes(q.value.toLowerCase());
+    });
+  });
+});
 
 
 </script>
