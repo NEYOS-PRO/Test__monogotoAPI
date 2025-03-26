@@ -3,7 +3,9 @@
         <div class="flex flex-col md:flex-row md:justify-between items-center p-3 mx-3">   
             <div class="flex items-center space-x-4 justify-start px-3 py-3.5">
                 <UInput v-model="q" placeholder="Filter ICCID..." />
-                <UButton @click="downloadCSV" label="Download CSV" />
+                <UDropdown :items="exports" :popper="{ placement: 'bottom-start' }">
+                  <UButton color="white" label="Export data" trailing-icon="i-heroicons-chevron-down-20-solid" />
+                </UDropdown>
             </div>
             <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
@@ -69,6 +71,7 @@ import { sub, format, isSameDay } from 'date-fns';
 import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
 import { da } from 'date-fns/locale';
+import * as XLSX from 'xlsx';
 const runtimeConfig = useRuntimeConfig(); 
 
 const selected = ref([]); 
@@ -211,9 +214,60 @@ const filteredRows = computed(() => {
 });
 
 /**
- * Upload files in csv
- */
+ * Export data 
+*/
 
+const exports = [
+  [
+    {
+      label: 'Export CSV',
+      icon: 'i-heroicons-circle-stack',
+      shortcuts: ['E'],
+      click: downloadCSV,
+    },
+    {
+      label: 'Export Excel',
+      icon: 'i-heroicons-document-text',
+      shortcuts: ['X'],
+      click: () => jsonToExcel(data.value),
+    }
+  ],
+]; 
+
+/**
+ * Export data to Excel
+ */
+async function jsonToExcel(jsonData) {
+  if (jsonData.length === 0) {
+    alert('No data available');
+    return;
+  }
+
+  // Créez une feuille de calcul à partir des données JSON
+  const worksheet = XLSX.utils.json_to_sheet(jsonData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+  // Générez un fichier Excel
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+  // Créez un Blob pour le téléchargement
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+
+  // Téléchargez le fichier
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'data.xlsx');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
+/**
+ * CSV export
+ */
  function jsonToCsv(jsonData) {
   if (jsonData.length === 0) {
     return 'No data available';

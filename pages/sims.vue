@@ -44,7 +44,7 @@
                 </div>
             </template>
         </UTable>
-        
+
         <!--Pagination-->
         <div v-if="data.length>0">
           <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
@@ -184,12 +184,6 @@ const fetchData = async () => {
 onMounted(() => {
     fetchData();
 });
-
-
-
-/**
- * Modal
- */
 
 const isModalOpen = ref(false); 
 
