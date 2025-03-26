@@ -1,29 +1,13 @@
 <template>
-    <div class="relative">
-        <div class="flex flex-col md:flex-row md:justify-between items-center mx-3">   
-            <div class="flex space-x-3 justify-end md:space-x-3 px-3 py-3.5 dark:border-gray-700">
-                <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns"/>
-                <UButton
-                    size="xs"
-                    color="blue"
-                    variant="solid"
-                    label="Activate"
-                    :disabled="selected.length === 0"
-                    :trailing="false"
-                    @click="ActivateSim"
-                />
-
-                <UButton
-                    size="xs"
-                    color="red"
-                    variant="solid"
-                    label="Desactivate"
-                    :disabled="selected.length === 0"
-                    :trailing="false"
-                    @click="isModalOpen = true"
-                />
+    <div>
+        <div class="flex flex-col md:flex-row md:justify-between items-center p-3 mx-3">   
+            <div class="flex items-center space-x-4 justify-start px-3 py-3.5">
+                <UInput v-model="q" placeholder="Filter ICCID..." />
+                <UDropdown :items="exports" :popper="{ placement: 'bottom-start' }">
+                  <UButton color="white" label="Export data" trailing-icon="i-heroicons-chevron-down-20-solid" />
+                </UDropdown>
             </div>
-            <UPopover :popper="{ placement: 'bottom-start' }">
+            <UPopover :popper="{ placement: 'bottom-start' }" class="mt-3">
                 <UButton icon="i-heroicons-calendar-days-20-solid">
                 {{ format(selectedDate.start, 'd MMM, yyy') }} - {{ format(selectedDate.end, 'd MMM, yyy') }}
                 </UButton>
@@ -49,15 +33,13 @@
                 </template>
             </UPopover>
         </div>
-
-        <!-- Spinner component -->
-        <!-- <Spinner v-if="loading === 'pending'" /> -->
+        
 
         <UTable
          class="txt-xs"
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Generating report, please wait...' }"
          :progress="{ color: 'info', animation: 'swing' }"
-         :columns="selectedColumns" :rows="rows" v-model="selected" @select="select" v-model:expand="expand" :loading="loading === 'pending'">
+         :columns="selectedColumns" :rows="filteredRows" v-model:expand="expand" :loading="loading === 'pending'">
             <!--  -->
             <template #expand="{ row }">
                 <div>
@@ -76,40 +58,10 @@
         </UTable>
 
         <!--Pagination-->
-        <UPagination class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
-
-        <!---Modal Altert Delete SIM-->
-
-        <UModal v-model="isModalOpen" prevent-close>
-          <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-            <template #header>
-              <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                  Souhaitez-vous vraiment désactiver cette SIM ?
-                </h3>
-                <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isModalOpen = false" />
-              </div>
-            </template>
-
-            <div calss="p-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Vous êtes sur le point de désactiver la SIM sélectionnée. Voulez-vous continuer ?
-                </p>
-                <div class="flex justify-end mt-4">
-                    <UButton color="gray" variant="ghost" label="Annuler" @click="isModalOpen = false" />
-                    <UButton color="red" variant="solid" label="Désactiver" @click="DesactivateSim" />          
-                </div>
-            </div>
-          </UCard>
-        </UModal>
-
-        <!--Modal Message-->
-        <UModal v-model="modalMessageOpen" :transition="false">
-          <div class="p-4 flex justify-between items-center flex-row space-y-2">
-            <p>{{ modalMEssage }}</p>
-            <UIcon name="i-heroicons-rocket-launch" class="w-5 h-5" />
-          </div>
-        </UModal>
+        <div v-if="data.length>0">
+          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="pageCount" :total="items.length" />
+        </div>
+        
     </div>
 </template>
 
@@ -118,6 +70,8 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { sub, format, isSameDay } from 'date-fns';
 import { DatePicker } from "v-calendar"; 
 import 'v-calendar/dist/style.css'; 
+import { da } from 'date-fns/locale';
+import * as XLSX from 'xlsx';
 const runtimeConfig = useRuntimeConfig(); 
 
 const selected = ref([]); 
@@ -134,7 +88,8 @@ const data = ref([]);
  */
 const page = ref(1);
 const items = ref(data);
-const pageCount = 5;
+const pageCount = 6;
+
 
 const loading = ref("pending");
 
@@ -149,30 +104,15 @@ const rows = computed(() => {
   return items.value.slice(start, end);
 });
 
-/**
- * Recupération de l'id de la SIM sélectionnée...
- * @param row 
- */
-
-function select(row) {
-  const index = selected.value.findIndex(item => item.id === row.id);
-  if (index === -1) {
-    selected.value.push(row);
-  } else {
-    selected.value.splice(index, 1);
-  }
-}
 
 const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
   { key: 'Status', label: 'Status', sortable: true },
-  { key: 'lastOperators', label: 'Last Operators', sortable: true }, // New column
-  { key: 'lastData', label: 'Last Data', sortable: true }, // New column
-  // { key: 'SMS', label: 'SMS', sortable: true },
-  { key: 'totalData', label: 'Total Data', sortable: true } // New column
+  { key: 'lastOperators', label: 'Last Operators', sortable: true }, 
+  { key: 'lastData', label: 'Last Data', sortable: true },
+  { key: 'totalData', label: 'Total Data', sortable: true }
 ];
-
 const selectedColumns = ref([...columns]);
 
 const secondaryColumns = [
@@ -219,7 +159,7 @@ function selectRange(duration) {
     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/get_things_report/${start_date.value}/${end_date.value}`); 
     const jsonData = await response.json();
    
-    console.log("Data => ", jsonData);
+    // console.log("Data => ", jsonData);
 
     if (response.ok) {
       // Transform the data to match the table columns
@@ -238,7 +178,6 @@ function selectRange(duration) {
           'lastOperators': lastOperator || secondLastOperator, // Use last operator or second last if last is empty
           'allOperators': operators, // Store all operators
           'Consumption': item['Consumption'], // Store all consumption data
-          // 'Data': lastOperatorData['Data'] || 'N/A',
           'SMS': lastOperatorData['Total'] || 'N/A', // Assuming 'Total' represents SMS consumption
           'Credit': lastOperatorData['Credit'] || 'N/A',
           'Total Before Credit': lastOperatorData['Total Before Credit'] || 'N/A',
@@ -249,6 +188,7 @@ function selectRange(duration) {
         };
       });
       data.value = transformedData;
+      // console.log('Data transform+>', transformedData);
     }
     loading.value = "idle";
   } catch (error) {
@@ -260,79 +200,152 @@ onMounted(fetchReport);
 
 watch([start_date, end_date], fetchReport);
 
-/**
- * Modal
- */
+// Ajout de la référence pour la recherche
+const q = ref('');
 
-const isModalOpen = ref(false); 
-
-/**
- * Modal Message
- */
-const modalMEssage = ref(null); 
-const modalMessageOpen = ref(false);
-
-/***
- * Activate des SIMs
- */
-
-const ActivateSim = async () => {
-   
-
-  const ICCID = selected.value[0]['ICCID'];
-
-  try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
-
-    if (response.ok) {
-      console.log('SIMs Activated successfully');
-      modalMEssage.value = 'SIMs Activated successfully';
-      selected.value = [];
-      modalMessageOpen.value = true;
-      /**
-       * Après 2 sec désactivé le modal
-       */
-      setTimeout(() => {
-        modalMessageOpen.value = false;
-        selected.value = [];
-      }, 2000);
-    }
-  } catch (error) {
-    console.log(error);
+// Propriété calculée pour filtrer les lignes en fonction de la valeur de q
+const filteredRows = computed(() => {
+  if (!q.value) {
+    return rows.value;
   }
+  return rows.value.filter((row) => {
+    return Object.values(row).some((value) => {
+      return String(value).toLowerCase().includes(q.value.toLowerCase());
+    });
+  });
+});
+
+/**
+ * Export data 
+*/
+
+const exports = [
+  [
+    {
+      label: 'Export CSV',
+      icon: 'i-heroicons-circle-stack',
+      shortcuts: ['C'],
+      click: downloadCSV,
+    },
+    {
+      label: 'Export XLSX',
+      icon: 'i-heroicons-document-text',
+      shortcuts: ['X'],
+      click: () => jsonToExcel(data.value),
+    },
+    {
+      label: 'Export JSON',
+      icon: 'i-heroicons-code-bracket',
+      shortcuts: ['J'],
+      click: downloadJSON,
+    },
+  ],
+]; 
+
+
+/**
+ * Export data to JSON
+ */
+ async function downloadJSON() {
+  if (data.value.length === 0) {
+    alert('No data available');
+    return;
+  }
+
+  // Convertir les données en chaîne JSON
+  const jsonContent = JSON.stringify(data.value, null, 2);
+
+  // Créer un Blob pour le téléchargement
+  const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  // Créer un lien pour télécharger le fichier
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'data.json');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 /**
- * Desactivate des SIMs
+ * Export data to Excel
  */
-const DesactivateSim = async () => {
-
-  const ICCID = selected.value[0]['ICCID'];
-
-  console.log('ICCID:', ICCID);
-
-  try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
-
-    if (response.ok) {
-      console.log('SIMs Desactivate successfully');
-      selected.value = [];
-      modalMessageOpen.value = true;
-      /**
-       * Après 2 sec désactivé le modal
-       */
-      setTimeout(() => {
-        modalMessageOpen.value = false;
-        selected.value = [];
-      }, 2000);
-    } else {
-      const errorText = await response.text();
-      console.log('Failed to desactivate SIM:', errorText);
-    }
-  } catch (error) {
-    console.log('Error:', error);
+async function jsonToExcel(jsonData) {
+  if (jsonData.length === 0) {
+    alert('No data available');
+    return;
   }
+
+  // Créez une feuille de calcul à partir des données JSON
+  const worksheet = XLSX.utils.json_to_sheet(jsonData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+  // Générez un fichier Excel
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+  // Créez un Blob pour le téléchargement
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+
+  // Téléchargez le fichier
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'data.xlsx');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
+
+/**
+ * CSV export
+ */
+ function jsonToCsv(jsonData) {
+  if (jsonData.length === 0) {
+    return 'No data available';
+  }
+
+  let csv = '';
+  
+  // Extract headers
+  const headers = Object.keys(jsonData[0]);
+  csv += headers.join(',') + '\n';
+  
+  // Extract values
+  jsonData.forEach(obj => {
+    const values = headers.map(header => obj[header]);
+    csv += values.join(',') + '\n';
+  });
+  
+  return csv;
+}
+
+async function downloadCSV() {
+  const csvContent = await getCSV();
+  if (csvContent === 'No data available') {
+    alert(csvContent);
+    return;
+  }
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'data.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function getCSV() {
+  if (data.value.length === 0) {
+    return 'No data available';
+  }
+  return jsonToCsv(data.value);
+}
 
 </script>
