@@ -59,7 +59,7 @@
 
         <!--Pagination-->
         <div v-if="data.length>0">
-          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="pageCount" :total="items.length" />
         </div>
         
     </div>
@@ -90,6 +90,7 @@ const page = ref(1);
 const items = ref(data);
 const pageCount = 6;
 
+
 const loading = ref("pending");
 
 const expand = ref({
@@ -107,6 +108,7 @@ const rows = computed(() => {
 const columns = [
   { key: 'ICCID', label: 'ICCID', sortable: true },
   { key: 'IMSI', label: 'IMSI', sortable: true },
+  { key: 'Status', label: 'Status', sortable: true },
   { key: 'lastOperators', label: 'Last Operators', sortable: true }, 
   { key: 'lastData', label: 'Last Data', sortable: true },
   { key: 'totalData', label: 'Total Data', sortable: true }

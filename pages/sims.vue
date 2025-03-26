@@ -3,7 +3,7 @@
 
         <section class="flex justify-between items-center p-3">
 
-            <div class="flex justify-start px-3 py-3.5">
+            <div class="flex  justify-start px-3 py-3.5">
                 <UInput v-model="q" placeholder="Filter ICCID..." />
             </div>
 
@@ -47,7 +47,7 @@
 
         <!--Pagination-->
         <div v-if="data.length>0">
-          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="pageCount" :total="items.length" />
         </div>
 
         <!---Modal Altert Delete SIM-->
@@ -97,7 +97,7 @@ const data = ref([]);
  */
 const page = ref(1);
 const items = ref(data);
-const pageCount = 8;
+const pageCount= 6;
 
 const loading = ref("pending");
 
@@ -289,6 +289,8 @@ const DesactivateSim = async () => {
     console.error('Error deactivating SIMs:', error);
   }
 };
+
+
 
 
 </script>
