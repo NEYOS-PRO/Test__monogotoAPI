@@ -222,17 +222,50 @@ const exports = [
     {
       label: 'Export CSV',
       icon: 'i-heroicons-circle-stack',
-      shortcuts: ['E'],
+      shortcuts: ['C'],
       click: downloadCSV,
     },
     {
-      label: 'Export Excel',
+      label: 'Export XLSX',
       icon: 'i-heroicons-document-text',
       shortcuts: ['X'],
       click: () => jsonToExcel(data.value),
-    }
+    },
+    {
+      label: 'Export JSON',
+      icon: 'i-heroicons-code-bracket',
+      shortcuts: ['J'],
+      click: downloadJSON,
+    },
   ],
 ]; 
+
+
+/**
+ * Export data to JSON
+ */
+ async function downloadJSON() {
+  if (data.value.length === 0) {
+    alert('No data available');
+    return;
+  }
+
+  // Convertir les données en chaîne JSON
+  const jsonContent = JSON.stringify(data.value, null, 2);
+
+  // Créer un Blob pour le téléchargement
+  const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  // Créer un lien pour télécharger le fichier
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'data.json');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 /**
  * Export data to Excel
