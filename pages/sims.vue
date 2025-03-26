@@ -95,7 +95,7 @@ const data = ref([]);
  */
 const page = ref(1);
 const items = ref(data);
-const pageCount = 5;
+const pageCount = 8;
 
 const loading = ref("pending");
 
