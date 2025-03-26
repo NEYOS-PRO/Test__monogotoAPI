@@ -56,7 +56,10 @@
         </UTable>
 
         <!--Pagination-->
-        <UPagination v-if="q === ''" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+        <div v-if="data.length>0">
+          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+        </div>
+        
     </div>
 </template>
 
@@ -151,7 +154,7 @@ function selectRange(duration) {
     const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/get_things_report/${start_date.value}/${end_date.value}`); 
     const jsonData = await response.json();
    
-    console.log("Data => ", jsonData);
+    // console.log("Data => ", jsonData);
 
     if (response.ok) {
       // Transform the data to match the table columns
@@ -180,7 +183,7 @@ function selectRange(duration) {
         };
       });
       data.value = transformedData;
-      console.log('Data transform+>', transformedData);
+      // console.log('Data transform+>', transformedData);
     }
     loading.value = "idle";
   } catch (error) {
@@ -191,19 +194,6 @@ function selectRange(duration) {
 onMounted(fetchReport);
 
 watch([start_date, end_date], fetchReport);
-
-/**
- * Modal
- */
-
-const isModalOpen = ref(false); 
-
-/**
- * Modal Message
- */
-const modalMEssage = ref(null); 
-const modalMessageOpen = ref(false);
-
 
 // Ajout de la référence pour la recherche
 const q = ref('');

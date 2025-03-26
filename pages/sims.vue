@@ -44,9 +44,11 @@
                 </div>
             </template>
         </UTable>
-
+        
         <!--Pagination-->
-        <UPagination v-if="q === ''" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+        <div v-if="data.length>0">
+          <UPagination v-if="q === '' && data.length>pageCount" class="flex justify-center mt-3" size="xs" v-model="page" :page-count="5" :total="items.length" />
+        </div>
 
         <!---Modal Altert Delete SIM-->
 
@@ -130,13 +132,16 @@ const filteredRows = computed(() => {
  * @param row 
  */
 
-function select(row) {
-  const index = selected.value.findIndex(item => item.id === row.id);
+ function select(row) {
+  const index = selected.value.findIndex(item => item === row['ICCID']);
   if (index === -1) {
-    selected.value.push(row);
+    // Ajouter l'élément s'il n'est pas déjà sélectionné
+    selected.value.push(row['ICCID']);
   } else {
+    // Supprimer l'élément s'il est déjà sélectionné
     selected.value.splice(index, 1);
   }
+  console.log('=> ICCIDs Selected:', selected.value);
 }
 
 const columns = [
@@ -194,70 +199,102 @@ const isModalOpen = ref(false);
 const modalMEssage = ref(null); 
 const modalMessageOpen = ref(false);
 
-/***
- * Activate des SIMs
- */
-
-const ActivateSim = async () => {
-
-  const ICCID = selected.value[0]['ICCID'];
-
-  try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/ACTIVE`);
-
-    if (response.ok) {
-      console.log('SIMs Activated successfully');
-      modalMEssage.value = 'SIMs Activated successfully';
-      selected.value = [];
-      modalMessageOpen.value = true;
-      /**
-       * Après 2 sec désactivé le modal
-       */
-      setTimeout(async () => {
-        modalMessageOpen.value = false;
-        selected.value = [];
-        await fetchData(); // Fetch updated data
-      }, 2000);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 /**
- * Desactivate des SIMs
+ * Activate multiple SIMs
  */
-const DesactivateSim = async () => {
+ const ActivateSim = async () => {
+  // Filtrer les ICCIDs valides (non null et non vides)
+  const ICCIDs = selected.value
+    .map(sim => sim['ICCID'])
+    .filter(iccid => iccid && iccid.trim() !== '');
 
-  const ICCID = selected.value[0]['ICCID'];
-
-  console.log('ICCID:', ICCID);
+  if (ICCIDs.length === 0) {
+    console.log('No valid SIMs selected for activation');
+    return;
+  }
 
   try {
-    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status/${ICCID}/SUSPENDED`);
+    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        iccids: ICCIDs,
+        status: 'ACTIVE',
+      }),
+    });
+
+    const result = await response.json();
 
     if (response.ok) {
-      console.log('SIMs Desactivate successfully');
-      modalMEssage.value = 'SIMs Desactivate successfully';
+      // console.log('SIMs activated successfully:', result);
+      modalMEssage.value = 'SIMs activated successfully';
       selected.value = [];
       modalMessageOpen.value = true;
-      isModalOpen.value = false;
-      /**
-       * Après 2 sec désactivé le modal
-       */
+
+      // Close modal after 2 seconds and refresh data
       setTimeout(async () => {
         modalMessageOpen.value = false;
         selected.value = [];
         await fetchData(); // Fetch updated data
       }, 2000);
     } else {
-      const errorText = await response.text();
-      console.log('Failed to desactivate SIM:', errorText);
+      console.error('Failed to activate SIMs:', result);
     }
   } catch (error) {
-    console.log('Error:', error);
+    console.error('Error activating SIMs:', error);
   }
-}
+};
+
+/**
+ * Deactivate multiple SIMs
+ */
+const DesactivateSim = async () => {
+  // Filtrer les ICCIDs valides (non null et non vides)
+  const ICCIDs = selected.value
+    .map(sim => sim['ICCID'])
+    .filter(iccid => iccid && iccid.trim() !== '');
+
+  if (ICCIDs.length === 0) {
+    console.log('No valid SIMs selected for deactivation');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${runtimeConfig.public.URL_REQUEST}/update_thing_status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        iccids: ICCIDs,
+        status: 'SUSPENDED',
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // console.log('SIMs deactivated successfully:', result);
+      modalMEssage.value = 'SIMs deactivated successfully';
+      selected.value = [];
+      modalMessageOpen.value = true;
+      isModalOpen.value = false;
+
+      // Close modal after 2 seconds and refresh data
+      setTimeout(async () => {
+        modalMessageOpen.value = false;
+        selected.value = [];
+        await fetchData(); // Fetch updated data
+      }, 2000);
+    } else {
+      console.error('Failed to deactivate SIMs:', result);
+    }
+  } catch (error) {
+    console.error('Error deactivating SIMs:', error);
+  }
+};
 
 
 </script>
