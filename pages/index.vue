@@ -205,14 +205,20 @@ const q = ref('');
 
 // Propriété calculée pour filtrer les lignes en fonction de la valeur de q
 const filteredRows = computed(() => {
-  if (!q.value) {
-    return rows.value;
-  }
-  return rows.value.filter((row) => {
-    return Object.values(row).some((value) => {
-      return String(value).toLowerCase().includes(q.value.toLowerCase());
+  let filteredData = data.value;
+
+  if (q.value) {
+    filteredData = data.value.filter((row) => {
+      return Object.values(row).some((value) => {
+        return String(value).toLowerCase().includes(q.value.toLowerCase());
+      });
     });
-  });
+  }
+
+  // Appliquer la pagination après le filtrage
+  const start = (page.value - 1) * pageCount;
+  const end = start + pageCount;
+  return filteredData.slice(start, end);
 });
 
 /**
