@@ -31,7 +31,6 @@
 
         </section>
         
-
         <UTable
          class="txt-xs"
          :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', size:56, label: 'Chargement des cartes SIMS...' }"
@@ -132,6 +131,7 @@ const filteredRows = computed(() => {
   const end = start + pageCount;
   return filteredData.slice(start, end);
 });
+
 
 /**
  * Recupération de l'id de la SIM sélectionnée...
